@@ -1,0 +1,541 @@
+svi kodovi se u toku sistema svode na zonecli.dll
+ovde se nalaze mnoge opcije koji se po meni najvise svode na to kako server uzima i koristi poruke/pakete
+Pocinjemo odavde zbog mesanja u programu po recima.
+#Veze sa rec "message" (SVI KODOVI I IMENA STRINGOVA SU SAMO ONI KOJI IMAJU SPOMINJANJE U KODOVIMA/FUNKC.)
+
+#ZoneClientGameProcessMessage
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+DWORD FUN_73abbbcc(int param_1,undefined4 param_2)
+
+{
+  HMODULE hModule;
+  DWORD DVar1;
+  FARPROC pFVar2;
+  WCHAR local_41c [262];
+  WCHAR local_210 [262];
+  
+  GetCurrentDirectoryW(0x104,local_41c);
+  lstrcpyW(local_210,(LPCWSTR)(param_1 + 8));
+  lstrcatW(local_210,(LPCWSTR)&DAT_73ac96bc);
+  SetCurrentDirectoryW(local_210);
+  hModule = LoadLibraryW((LPCWSTR)(param_1 + 0x418));
+  if (hModule == (HMODULE)0x0) {
+    DVar1 = GetLastError();
+  }
+  else {
+    SetCurrentDirectoryW(local_41c);
+    *(HMODULE *)(param_1 + 0x620) = hModule;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllInit_73ac96ac);
+    *(FARPROC *)(param_1 + 0x664) = pFVar2;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllDelete_73ac9698);
+    *(FARPROC *)(param_1 + 0x668) = pFVar2;
+    DAT_73acb0f4 = GetProcAddress(hModule,s_ZoneClientMain_73ac9688);
+    DAT_73acb0f8 = GetProcAddress(hModule,s_ZoneClientExit_73ac9678);
+    DAT_73acb0fc = GetProcAddress(hModule,s_ZoneClientMessageHandler_73ac965c);
+    DAT_73acb100 = GetProcAddress(hModule,s_ZoneClientName_73ac964c);
+    DAT_73acb104 = GetProcAddress(hModule,s_ZoneClientInternalName_73ac9634);
+    DAT_73acb108 = GetProcAddress(hModule,s_ZoneClientVersion_73ac9620);
+    DAT_73acb10c = GetProcAddress(hModule,s_ZoneClientGameNew_73ac960c);
+    DAT_73acb110 = GetProcAddress(hModule,s_ZoneClientGameDelete_73ac95f4);
+    DAT_73acb114 = GetProcAddress(hModule,s_ZoneClientGameProcessMessage_73ac95d4);
+    DAT_73acb118 = GetProcAddress(hModule,s_ZoneClientGameAddKibitzer_73ac95b8);
+    _DAT_73acb11c = GetProcAddress(hModule,s_ZoneClientGameRemoveKibitzer_73ac9598);
+    if (((((*(code **)(param_1 + 0x664) == (code *)0x0) || (*(int *)(param_1 + 0x668) == 0)) ||
+         (DAT_73acb0f4 == (FARPROC)0x0)) ||
+        (((DAT_73acb0f8 == (FARPROC)0x0 || (DAT_73acb0fc == (FARPROC)0x0)) ||
+         ((DAT_73acb100 == (FARPROC)0x0 ||
+          ((DAT_73acb104 == (FARPROC)0x0 || (DAT_73acb108 == (FARPROC)0x0)))))))) ||
+       ((DAT_73acb10c == (FARPROC)0x0 ||
+        ((((DAT_73acb110 == (FARPROC)0x0 || (DAT_73acb114 == (FARPROC)0x0)) ||
+          (DAT_73acb118 == (FARPROC)0x0)) || (_DAT_73acb11c == (FARPROC)0x0)))))) {
+      FUN_73abbd8b(param_1);
+      DVar1 = 0x11;
+    }
+    else {
+      DVar1 = (**(code **)(param_1 + 0x664))(hModule,param_2);
+      if (DVar1 != 0) {
+        FUN_73abbd8b(param_1);
+      }
+    }
+  }
+  return DVar1;
+}
+
+
+#ovom kodu, sudeci po imenu mozemo reci da je duzan da sprovede poruku/paket
+#Takode unutra mozemo viditi "ZoneClient" stringove sifrovani u funkicjama poput "Name", "GameNew", "Version" i sl.
+
+#ZoneClientMessageHandler
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+DWORD FUN_73abbbcc(int param_1,undefined4 param_2)
+
+{
+  HMODULE hModule;
+  DWORD DVar1;
+  FARPROC pFVar2;
+  WCHAR local_41c [262];
+  WCHAR local_210 [262];
+  
+  GetCurrentDirectoryW(0x104,local_41c);
+  lstrcpyW(local_210,(LPCWSTR)(param_1 + 8));
+  lstrcatW(local_210,(LPCWSTR)&DAT_73ac96bc);
+  SetCurrentDirectoryW(local_210);
+  hModule = LoadLibraryW((LPCWSTR)(param_1 + 0x418));
+  if (hModule == (HMODULE)0x0) {
+    DVar1 = GetLastError();
+  }
+  else {
+    SetCurrentDirectoryW(local_41c);
+    *(HMODULE *)(param_1 + 0x620) = hModule;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllInit_73ac96ac);
+    *(FARPROC *)(param_1 + 0x664) = pFVar2;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllDelete_73ac9698);
+    *(FARPROC *)(param_1 + 0x668) = pFVar2;
+    DAT_73acb0f4 = GetProcAddress(hModule,s_ZoneClientMain_73ac9688);
+    DAT_73acb0f8 = GetProcAddress(hModule,s_ZoneClientExit_73ac9678);
+    DAT_73acb0fc = GetProcAddress(hModule,s_ZoneClientMessageHandler_73ac965c);
+    DAT_73acb100 = GetProcAddress(hModule,s_ZoneClientName_73ac964c);
+    DAT_73acb104 = GetProcAddress(hModule,s_ZoneClientInternalName_73ac9634);
+    DAT_73acb108 = GetProcAddress(hModule,s_ZoneClientVersion_73ac9620);
+    DAT_73acb10c = GetProcAddress(hModule,s_ZoneClientGameNew_73ac960c);
+    DAT_73acb110 = GetProcAddress(hModule,s_ZoneClientGameDelete_73ac95f4);
+    DAT_73acb114 = GetProcAddress(hModule,s_ZoneClientGameProcessMessage_73ac95d4);
+    DAT_73acb118 = GetProcAddress(hModule,s_ZoneClientGameAddKibitzer_73ac95b8);
+    _DAT_73acb11c = GetProcAddress(hModule,s_ZoneClientGameRemoveKibitzer_73ac9598);
+    if (((((*(code **)(param_1 + 0x664) == (code *)0x0) || (*(int *)(param_1 + 0x668) == 0)) ||
+         (DAT_73acb0f4 == (FARPROC)0x0)) ||
+        (((DAT_73acb0f8 == (FARPROC)0x0 || (DAT_73acb0fc == (FARPROC)0x0)) ||
+         ((DAT_73acb100 == (FARPROC)0x0 ||
+          ((DAT_73acb104 == (FARPROC)0x0 || (DAT_73acb108 == (FARPROC)0x0)))))))) ||
+       ((DAT_73acb10c == (FARPROC)0x0 ||
+        ((((DAT_73acb110 == (FARPROC)0x0 || (DAT_73acb114 == (FARPROC)0x0)) ||
+          (DAT_73acb118 == (FARPROC)0x0)) || (_DAT_73acb11c == (FARPROC)0x0)))))) {
+      FUN_73abbd8b(param_1);
+      DVar1 = 0x11;
+    }
+    else {
+      DVar1 = (**(code **)(param_1 + 0x664))(hModule,param_2);
+      if (DVar1 != 0) {
+        FUN_73abbd8b(param_1);
+      }
+    }
+  }
+  return DVar1;
+}
+
+
+#Ovaj kod bi mogao reci da je duzan da zadrzava poruku i kako da je prenese
+#Ima kao i prethodni, nekoliko spominjanja "ZoneClient" stringova koji su sifrovani u kodu/Funkciji.
+
+"Zone" Stringovi
+#ZoneTimerWindowClass
+
+
+undefined4 FUN_73ab79c9(void)
+
+{
+  ATOM AVar1;
+  int iVar2;
+  undefined4 uVar3;
+  BOOL BVar4;
+  HWND hWnd;
+  tagWNDCLASSEXW local_34;
+  
+  iVar2 = ZGetClientGlobalPointer();
+  uVar3 = ZLListNew(0);
+  *(undefined4 *)(iVar2 + 0x690) = uVar3;
+  local_34.cbSize = 0x30;
+  BVar4 = GetClassInfoExW(*(HINSTANCE *)(iVar2 + 0x6f0),(LPCWSTR)PTR_u_ZoneTimerWindowClass_73ac9 3a0
+                          ,&local_34);
+  if (BVar4 == 0) {
+    local_34.cbSize = 0x30;
+    local_34.style = 0;
+    local_34.lpfnWndProc = FUN_73ab7b06;
+    local_34.cbClsExtra = 0;
+    local_34.cbWndExtra = 0;
+    local_34.hInstance = *(HINSTANCE *)(iVar2 + 0x6f0);
+    local_34.lpszClassName = (LPCWSTR)PTR_u_ZoneTimerWindowClass_73ac93a0;
+    local_34.hIcon = (HICON)0x0;
+    local_34.hCursor = (HCURSOR)0x0;
+    local_34.hbrBackground = (HBRUSH)0x0;
+    local_34.lpszMenuName = (LPCWSTR)0x0;
+    local_34.hIconSm = (HICON)0x0;
+    AVar1 = RegisterClassExW(&local_34);
+    if (AVar1 == 0) {
+      return 0;
+    }
+  }
+  hWnd = CreateWindowExW(0,(LPCWSTR)PTR_u_ZoneTimerWindowClass_73ac93a0,u_TIMERWINDOW_73ac93d0,
+                         0x80c80000,0,0,0,0,(HWND)0x0,(HMENU)0x0,*(HINSTANCE *)(iVar2 + 0x6f0),
+                         (LPVOID)0x0);
+  *(HWND *)(iVar2 + 0x68c) = hWnd;
+  if (hWnd == (HWND)0x0) {
+    return 0;
+  }
+  SetTimer(hWnd,0,10,(TIMERPROC)0x0);
+  return 1;
+}
+
+
+#ZoneClientGame - "RemoveKibitzer", "AddKibitzer", "ProcessMessage", "Delete", "New"
+#ZoneClient - "Version", "InternalName", "Name", "MessageHandler", "Exit", "Main"
+#ZoneGame - "DllDelete", "DllInit"
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+DWORD FUN_73abbbcc(int param_1,undefined4 param_2)
+
+{
+  HMODULE hModule;
+  DWORD DVar1;
+  FARPROC pFVar2;
+  WCHAR local_41c [262];
+  WCHAR local_210 [262];
+  
+  GetCurrentDirectoryW(0x104,local_41c);
+  lstrcpyW(local_210,(LPCWSTR)(param_1 + 8));
+  lstrcatW(local_210,(LPCWSTR)&DAT_73ac96bc);
+  SetCurrentDirectoryW(local_210);
+  hModule = LoadLibraryW((LPCWSTR)(param_1 + 0x418));
+  if (hModule == (HMODULE)0x0) {
+    DVar1 = GetLastError();
+  }
+  else {
+    SetCurrentDirectoryW(local_41c);
+    *(HMODULE *)(param_1 + 0x620) = hModule;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllInit_73ac96ac);
+    *(FARPROC *)(param_1 + 0x664) = pFVar2;
+    pFVar2 = GetProcAddress(hModule,s_ZoneGameDllDelete_73ac9698);
+    *(FARPROC *)(param_1 + 0x668) = pFVar2;
+    DAT_73acb0f4 = GetProcAddress(hModule,s_ZoneClientMain_73ac9688);
+    DAT_73acb0f8 = GetProcAddress(hModule,s_ZoneClientExit_73ac9678);
+    DAT_73acb0fc = GetProcAddress(hModule,s_ZoneClientMessageHandler_73ac965c);
+    DAT_73acb100 = GetProcAddress(hModule,s_ZoneClientName_73ac964c);
+    DAT_73acb104 = GetProcAddress(hModule,s_ZoneClientInternalName_73ac9634);
+    DAT_73acb108 = GetProcAddress(hModule,s_ZoneClientVersion_73ac9620);
+    DAT_73acb10c = GetProcAddress(hModule,s_ZoneClientGameNew_73ac960c);
+    DAT_73acb110 = GetProcAddress(hModule,s_ZoneClientGameDelete_73ac95f4);
+    DAT_73acb114 = GetProcAddress(hModule,s_ZoneClientGameProcessMessage_73ac95d4);
+    DAT_73acb118 = GetProcAddress(hModule,s_ZoneClientGameAddKibitzer_73ac95b8);
+    _DAT_73acb11c = GetProcAddress(hModule,s_ZoneClientGameRemoveKibitzer_73ac9598);
+    if (((((*(code **)(param_1 + 0x664) == (code *)0x0) || (*(int *)(param_1 + 0x668) == 0)) ||
+         (DAT_73acb0f4 == (FARPROC)0x0)) ||
+        (((DAT_73acb0f8 == (FARPROC)0x0 || (DAT_73acb0fc == (FARPROC)0x0)) ||
+         ((DAT_73acb100 == (FARPROC)0x0 ||
+          ((DAT_73acb104 == (FARPROC)0x0 || (DAT_73acb108 == (FARPROC)0x0)))))))) ||
+       ((DAT_73acb10c == (FARPROC)0x0 ||
+        ((((DAT_73acb110 == (FARPROC)0x0 || (DAT_73acb114 == (FARPROC)0x0)) ||
+          (DAT_73acb118 == (FARPROC)0x0)) || (_DAT_73acb11c == (FARPROC)0x0)))))) {
+      FUN_73abbd8b(param_1);
+      DVar1 = 0x11;
+    }
+    else {
+      DVar1 = (**(code **)(param_1 + 0x664))(hModule,param_2);
+      if (DVar1 != 0) {
+        FUN_73abbd8b(param_1);
+      }
+    }
+  }
+  return DVar1;
+}
+
+
+#*Ona podela izgleda cudno*
+#*To je zato sto ovaj kod ima sve one funkcije umesane ovde i sifrovane*
+
+#ZoneGraphicsWindowClass-Classic
+|73abc66b - 73abc601|
+
+
+undefined4 FUN_73abc5cd(void)
+
+{
+  ATOM AVar1;
+  int iVar2;
+  undefined4 uVar3;
+  BOOL BVar4;
+  tagWNDCLASSEXW local_34;
+  
+  iVar2 = ZGetClientGlobalPointer();
+  if (iVar2 == 0) {
+    return 1;
+  }
+  uVar3 = ZLListNew(0);
+  *(undefined4 *)(iVar2 + 0x6d8) = uVar3;
+  local_34.cbSize = 0x30;
+  BVar4 = GetClassInfoExW(*(HINSTANCE *)(iVar2 + 0x6f0),
+                          (LPCWSTR)PTR_u_ZoneGraphicsWindowClass-Classic_73ac9b3c,&local_34);
+  if (BVar4 == 0) {
+    local_34.cbSize = 0x30;
+    local_34.style = 0x1008;
+    local_34.lpfnWndProc = FUN_73abdff9;
+    local_34.cbClsExtra = 0;
+    local_34.cbWndExtra = 0x22;
+    local_34.hInstance = *(HINSTANCE *)(iVar2 + 0x6f0);
+    local_34.hIcon = LoadIconW(*(HINSTANCE *)(iVar2 + 0x620),(LPCWSTR)0x64);
+    local_34.hCursor = LoadCursorW((HINSTANCE)0x0,(LPCWSTR)0x7f00);
+    local_34.hbrBackground = (HBRUSH)GetStockObject(5);
+    local_34.lpszClassName = (LPCWSTR)PTR_u_ZoneGraphicsWindowClass-Classic_73ac9b3c;
+    local_34.lpszMenuName = (LPCWSTR)0x0;
+    local_34.hIconSm = (HICON)0x0;
+    AVar1 = RegisterClassExW(&local_34);
+    if (AVar1 == 0) {
+      return 0;
+    }
+  }
+  FUN_73abc709();
+  *(undefined4 *)(iVar2 + 0xce8) = 0;
+  return 0;
+}
+
+
+|73abd09a - 73ac9b3c|
+
+
+undefined4
+ZWindowInit(HWND param_1,short *param_2,short param_3,int param_4,LPCWSTR param_5,short param_6,
+           ushort param_7,short param_8,int param_9,int param_10,DWORD param_11)
+
+{
+  HWND lpParam;
+  undefined uVar1;
+  HDC hdc;
+  int iVar2;
+  HWND hWnd;
+  HWND pHVar3;
+  undefined4 uVar4;
+  LONG LVar5;
+  int iVar6;
+  ushort uVar7;
+  undefined uStack0000000f;
+  int iVar8;
+  tagTEXTMETRICW local_64;
+  tagRECT local_28;
+  tagRECT local_18;
+  int local_8;
+  
+                    /* 0xccde  406  ZWindowInit */
+  lpParam = param_1;
+  local_8 = ZGetClientGlobalPointer();
+  if ((local_8 == 0) || (param_1 == (HWND)0x0)) {
+    return 1;
+  }
+  param_1[0x1c].unused = param_9;
+  param_1[0x1a].unused = param_11;
+  param_1[0x1d].unused = (uint)param_7;
+  param_1[0x1e].unused = param_10;
+  *(short *)&param_1[0x1f].unused = param_3;
+  param_1[0x20].unused = param_4;
+  param_1[0x3d].unused = (uint)(param_3 == 1);
+  if (((param_3 == 1) == 0) && (param_4 != 0)) {
+    iVar8 = 1;
+  }
+  else {
+    iVar8 = 0;
+  }
+  param_1[0x3e].unused = iVar8;
+  memset(param_1 + 0x29,0,0x10);
+  pHVar3 = param_1 + 0x29;
+  param_1[0x25].unused = param_1[0x29].unused;
+  param_1[0x26].unused = param_1[0x2a].unused;
+  param_1[0x27].unused = param_1[0x2b].unused;
+  param_1[0x28].unused = param_1[0x2c].unused;
+  param_1[0x35].unused = pHVar3->unused;
+  param_1[0x36].unused = param_1[0x2a].unused;
+  param_1[0x37].unused = param_1[0x2b].unused;
+  param_1[0x38].unused = param_1[0x2c].unused;
+  param_1[0x2d].unused = pHVar3->unused;
+  param_1[0x2e].unused = param_1[0x2a].unused;
+  param_1[0x2f].unused = param_1[0x2b].unused;
+  param_1[0x30].unused = param_1[0x2c].unused;
+  param_1[0x31].unused = pHVar3->unused;
+  param_1[0x32].unused = param_1[0x2a].unused;
+  param_1[0x33].unused = param_1[0x2b].unused;
+  param_1[0x34].unused = param_1[0x2c].unused;
+  param_1[0x3a].unused = 0;
+  param_1[0x39].unused = 0;
+  param_1[0x3b].unused = 0;
+  param_1[0x24].unused = (int)param_2[2] - (int)*param_2;
+  param_1[0x23].unused = (int)param_2[3] - (int)param_2[1];
+  param_1[0x2d].unused = (int)*param_2;
+  param_1[0x2e].unused = (int)param_2[1];
+  if (param_7 != 0) {
+    hdc = GetDC((HWND)0x0);
+    GetTextMetricsW(hdc,&local_64);
+    ReleaseDC((HWND)0x0,hdc);
+    local_18.left = 0;
+    local_18.top = 0;
+    local_28.left = 0;
+    local_18.bottom = ((local_64.tmHeight + local_64.tmExternalLeading) * 7) / 2;
+    local_28.top = 0;
+    local_28.bottom = ((local_64.tmHeight + local_64.tmExternalLeading) * 3) / 2;
+    param_1[0x29].unused = 0;
+    param_1[0x2a].unused = 0;
+    param_1[0x2b].unused = local_28.right;
+    param_1[0x2c].unused = local_28.bottom;
+    param_1[0x25].unused = 0;
+    param_1[0x26].unused = 0;
+    param_1[0x27].unused = local_18.right;
+    param_1[0x28].unused = local_18.bottom;
+    param_1[0x35].unused = 0;
+    param_1[0x36].unused = 0;
+    param_1[0x37].unused = local_18.right;
+    param_1[0x38].unused = local_18.bottom;
+  }
+  param_11 = 0;
+  if (param_1[0x3e].unused == 0) {
+    _param_3 = 0x86000000;
+    if ((param_1[0x3d].unused != 0) && (param_11 = 1, param_4 != 0)) {
+      pHVar3 = (HWND)ZWindowGetHWND(param_4);
+      GetWindowRect(pHVar3,&local_28);
+      OffsetRect((LPRECT)(param_1 + 0x2d),local_28.left,local_28.top);
+    }
+  }
+  else {
+    _param_3 = 0x46000000;
+  }
+  uVar7 = *(ushort *)&param_1[0x1f].unused & 0x7fff;
+  if ((uVar7 == 0) || (uVar7 == 1)) {
+    iVar8 = GetSystemMetrics(4);
+    param_1[0x3b].unused = iVar8;
+  }
+  else {
+    param_1[0x3b].unused = 0;
+  }
+  if (uVar7 == 0) {
+    uVar1 = uStack0000000f;
+    _param_3 = _param_3 | 0xc20000;
+    if ((*(byte *)((int)&param_1[0x1f].unused + 1) & 0x80) == 0) {
+      _param_3 = CONCAT13(uVar1,0xc20000) | 0x80000;
+      goto LAB_73abceea;
+    }
+  }
+  else {
+LAB_73abceea:
+    if (uVar7 == 1) {
+      _param_3 = _param_3 | 0xc00000;
+    }
+    if (uVar7 == 2) {
+      _param_3 = _param_3 | 0x800000;
+    }
+    if (uVar7 == 3) {
+      _param_3 = 0x40000000;
+    }
+  }
+  if (param_7 != 0) {
+    _param_3 = _param_3 | 0x40000;
+  }
+  if (param_1[0x20].unused == 0) {
+    param_1 = (HWND)0x0;
+  }
+  else {
+    param_1 = *(HWND *)(param_1[0x20].unused + 100);
+  }
+  if ((param_1 == (HWND)0x0) &&
+     (((param_1 = *(HWND *)(local_8 + 0x6d0), param_1 == (HWND)0x0 || ((_param_3 & 0x80000000) !=  0)
+       ) || (param_1 == (HWND)0x0)))) {
+    param_1 = *(HWND *)(local_8 + 0x6d4);
+  }
+  if ((_param_3 & 0x800000) != 0) {
+    if (lpParam[0x3d].unused == 0) {
+      if ((_param_3 & 0x40000) == 0) {
+        param_9 = GetSystemMetrics(5);
+        iVar8 = 6;
+      }
+      else {
+        param_9 = GetSystemMetrics(0x20);
+        iVar8 = 0x21;
+      }
+    }
+    else {
+      param_9 = GetSystemMetrics(7);
+      iVar8 = 8;
+    }
+    iVar8 = GetSystemMetrics(iVar8);
+    lpParam[0x3a].unused = param_9 * 2;
+    lpParam[0x39].unused = iVar8 * 2;
+  }
+  FUN_73abd86f((int)lpParam);
+  if (param_8 == 0) goto LAB_73abd070;
+  iVar8 = lpParam[0x30].unused - lpParam[0x2e].unused;
+  iVar6 = lpParam[0x2f].unused - lpParam[0x2d].unused;
+  pHVar3 = lpParam + 0x2d;
+  if (param_4 == 0) {
+    iVar2 = GetSystemMetrics(0);
+    pHVar3->unused = (iVar2 - iVar6) / 2;
+    iVar2 = GetSystemMetrics(1);
+LAB_73abd051:
+    iVar2 = (iVar2 - iVar8) / 2;
+  }
+  else {
+    hWnd = (HWND)ZWindowGetHWND(param_4);
+    GetWindowRect(hWnd,&local_18);
+    if ((_param_3 & 0x80000000) == 0) {
+      pHVar3->unused = ((local_18.right - local_18.left) - iVar6) / 2;
+      iVar2 = local_18.bottom - local_18.top;
+      goto LAB_73abd051;
+    }
+    pHVar3->unused = ((local_18.right - local_18.left) - iVar6) / 2 + local_18.left;
+    iVar2 = ((local_18.bottom - local_18.top) - iVar8) / 2 + local_18.top;
+  }
+  lpParam[0x2e].unused = iVar2;
+  lpParam[0x2f].unused = iVar6 + pHVar3->unused;
+  lpParam[0x30].unused = iVar2 + iVar8;
+LAB_73abd070:
+  lpParam[0x31].unused = lpParam[0x2d].unused;
+  lpParam[0x32].unused = lpParam[0x2e].unused;
+  lpParam[0x33].unused = lpParam[0x2f].unused;
+  lpParam[0x34].unused = lpParam[0x30].unused;
+  pHVar3 = CreateWindowExW(param_11,(LPCWSTR)PTR_u_ZoneGraphicsWindowClass-Classic_73ac9b3c,para m_5,
+                           _param_3,0,0,0,0,param_1,(HMENU)0x0,*(HINSTANCE *)(local_8 + 0x6f0),
+                           lpParam);
+  lpParam[0x2d].unused = lpParam[0x31].unused;
+  lpParam[0x2e].unused = lpParam[0x32].unused;
+  lpParam[0x2f].unused = lpParam[0x33].unused;
+  lpParam[0x30].unused = lpParam[0x34].unused;
+  lpParam[0x19].unused = (int)pHVar3;
+  if (pHVar3 == (HWND)0x0) {
+    uVar4 = 0x7d1;
+  }
+  else {
+    if (param_7 != 0) {
+      pHVar3 = CreateWindowExW(0,u_EDIT_73ac9114,(LPCWSTR)0x0,0x50801084,0,0,0,0,pHVar3,
+                               (HMENU)0x7ffe,*(HINSTANCE *)(local_8 + 0x6f0),(LPVOID)0x0);
+      lpParam[0x21].unused = (int)pHVar3;
+      SetPropW(pHVar3,u_pWindow_73ac90c0,lpParam);
+      LVar5 = SetWindowLongW((HWND)lpParam[0x21].unused,-4,0x73abcb79);
+      lpParam[0x42].unused = LVar5;
+      SendMessageW((HWND)lpParam[0x21].unused,0xc5,0xfe,0);
+      if (*(WPARAM *)(local_8 + 0x6dc) != 0) {
+        SendMessageW((HWND)lpParam[0x21].unused,0x30,*(WPARAM *)(local_8 + 0x6dc),0);
+      }
+      pHVar3 = CreateWindowExW(0,u_EDIT_73ac9114,(LPCWSTR)0x0,0x50a00044,0,0,0,0,
+                               (HWND)lpParam[0x19].unused,(HMENU)0x7fff,
+                               *(HINSTANCE *)(local_8 + 0x6f0),(LPVOID)0x0);
+      lpParam[0x22].unused = (int)pHVar3;
+      SendMessageW(pHVar3,0xcf,1,0);
+      SetPropW((HWND)lpParam[0x22].unused,u_pWindow_73ac90c0,lpParam);
+      LVar5 = SetWindowLongW((HWND)lpParam[0x22].unused,-4,0x73abcaf7);
+      lpParam[0x41].unused = LVar5;
+      if (*(WPARAM *)(local_8 + 0x6dc) != 0) {
+        SendMessageW((HWND)lpParam[0x22].unused,0x30,*(WPARAM *)(local_8 + 0x6dc),0);
+      }
+    }
+    FUN_73abd7c5((int)lpParam);
+    if (param_6 != 0) {
+      ZWindowShow((int)lpParam);
+    }
+    *(undefined2 *)&lpParam[9].unused = 0;
+    uVar4 = 0;
+  }
+  return uVar4;
+}
+
+
+#Sudeci ovim reko bi da ovaj string/kod vrsi neku funciju oko grafike i pravljenja prozora(window).

@@ -1,0 +1,231 @@
+pisem sve sto koda i definisanih stringova pronadem  u zeeverm.dll
+#sve sa # znaci komentaj, ime/string ili objasnjenje
+
+#zeeverm.dll
+
+undefined4 GetVersionPack(LPCSTR param_1,LPSTR param_2)
+
+{
+  LPSTR pCVar1;
+  HMODULE hModule;
+  BOOL BVar2;
+  uint uVar3;
+  uint uVar4;
+  uint uVar5;
+  undefined unaff_DI;
+  CHAR local_158 [260];
+  CHAR local_54 [64];
+  uint local_14;
+  DWORD local_10;
+  LPVOID local_c;
+  ushort *local_8;
+  
+                    /* 0x10c9  1  GetVersionPack */
+  pCVar1 = param_2;
+  lstrcpynA(param_2,param_1,0x40);
+  local_10 = 0;
+  hModule = (HMODULE)TlsGetValue(DAT_72d02000);
+  GetModuleFileNameA(hModule,local_158,0x104);
+  param_1 = (LPCSTR)GetFileVersionInfoSizeA(local_158,&local_10);
+  FUN_72d01260(unaff_DI);
+  GetFileVersionInfoA(local_158,0,(DWORD)param_1,&stack0xfffffe9c);
+  BVar2 = VerQueryValueA(&stack0xfffffe9c,&DAT_72d020a8,&local_c,(PUINT)&param_1);
+  if (((BVar2 != 0) && (local_c != (LPVOID)0x0)) && (param_1 != (LPCSTR)0x0)) {
+    uVar4 = *(byte *)((int)local_c + 8) & 0x3f;
+    local_14 = *(byte *)((int)local_c + 0xc) & 0xf;
+    uVar3 = *(uint *)((int)local_c + 8) >> 0x10 & 0xff;
+    uVar5 = *(uint *)((int)local_c + 0xc) >> 0x10 & 0x3fff;
+    *(uint *)(pCVar1 + 0x78) = ((uVar3 << 6 | uVar4) << 0xe | uVar5) << 4 | local_14;
+    wsprintfA(pCVar1 + 0x40,s_%d.%02d.%d.%d_72d02098,uVar3,uVar4,uVar5,local_14);
+    BVar2 = VerQueryValueA(&stack0xfffffe9c,s_\VarFileInfo\Translation_72d0207c,&local_8,
+                           (PUINT)&param_1);
+    if (((BVar2 != 0) && (local_8 != (ushort *)0x0)) && (param_1 != (LPCSTR)0x0)) {
+      wsprintfA(local_54,s_\StringFileInfo\%04x%04x\Special_72d02054,(uint)*local_8,(uint)local_ 8[1]
+               );
+      BVar2 = VerQueryValueA(&stack0xfffffe9c,local_54,&param_2,(PUINT)&param_1);
+      if (((BVar2 != 0) && (param_2 != (LPSTR)0x0)) && (param_1 != (LPCSTR)0x0)) {
+        lstrcpynA(pCVar1 + 0x58,param_2,0x20);
+        return 0;
+      }
+    }
+  }
+  return 0x80004005;
+}
+
+
+#neki kod nasumicni, sigurno ce se ponavljati par puta...
+
+#GetVersionPack
+
+
+
+undefined4 GetVersionPack(LPCSTR param_1,LPSTR param_2)
+
+{
+  LPSTR pCVar1;
+  HMODULE hModule;
+  BOOL BVar2;
+  uint uVar3;
+  uint uVar4;
+  uint uVar5;
+  undefined unaff_DI;
+  CHAR local_158 [260];
+  CHAR local_54 [64];
+  uint local_14;
+  DWORD local_10;
+  LPVOID local_c;
+  ushort *local_8;
+  
+                    /* 0x10c9  1  GetVersionPack */
+  pCVar1 = param_2;
+  lstrcpynA(param_2,param_1,0x40);
+  local_10 = 0;
+  hModule = (HMODULE)TlsGetValue(DAT_72d02000);
+  GetModuleFileNameA(hModule,local_158,0x104);
+  param_1 = (LPCSTR)GetFileVersionInfoSizeA(local_158,&local_10);
+  FUN_72d01260(unaff_DI);
+  GetFileVersionInfoA(local_158,0,(DWORD)param_1,&stack0xfffffe9c);
+  BVar2 = VerQueryValueA(&stack0xfffffe9c,&DAT_72d020a8,&local_c,(PUINT)&param_1);
+  if (((BVar2 != 0) && (local_c != (LPVOID)0x0)) && (param_1 != (LPCSTR)0x0)) {
+    uVar4 = *(byte *)((int)local_c + 8) & 0x3f;
+    local_14 = *(byte *)((int)local_c + 0xc) & 0xf;
+    uVar3 = *(uint *)((int)local_c + 8) >> 0x10 & 0xff;
+    uVar5 = *(uint *)((int)local_c + 0xc) >> 0x10 & 0x3fff;
+    *(uint *)(pCVar1 + 0x78) = ((uVar3 << 6 | uVar4) << 0xe | uVar5) << 4 | local_14;
+    wsprintfA(pCVar1 + 0x40,s_%d.%02d.%d.%d_72d02098,uVar3,uVar4,uVar5,local_14);
+    BVar2 = VerQueryValueA(&stack0xfffffe9c,s_\VarFileInfo\Translation_72d0207c,&local_8,
+                           (PUINT)&param_1);
+    if (((BVar2 != 0) && (local_8 != (ushort *)0x0)) && (param_1 != (LPCSTR)0x0)) {
+      wsprintfA(local_54,s_\StringFileInfo\%04x%04x\Special_72d02054,(uint)*local_8,(uint)local_ 8[1]
+               );
+      BVar2 = VerQueryValueA(&stack0xfffffe9c,local_54,&param_2,(PUINT)&param_1);
+      if (((BVar2 != 0) && (param_2 != (LPSTR)0x0)) && (param_1 != (LPCSTR)0x0)) {
+        lstrcpynA(pCVar1 + 0x58,param_2,0x20);
+        return 0;
+      }
+    }
+  }
+  return 0x80004005;
+}
+
+
+#reko sam ima da se ponavlja.
+#uzima valjda verziju necega...
+
+#VerQueryValueA
+
+
+BOOL VerQueryValueA(LPCVOID pBlock,LPCSTR lpSubBlock,LPVOID *lplpBuffer,PUINT puLen)
+
+{
+  BOOL BVar1;
+  
+                    /* WARNING: Could not recover jumptable at 0x72d0124a. Too many branches */
+                    /* WARNING: Treating indirect jump as call */
+  BVar1 = VerQueryValueA(pBlock,lpSubBlock,lplpBuffer,puLen);
+  return BVar1;
+}
+
+
+#nemam pojma sta je
+#mozda neka zavisnost of vrednosti
+
+#StartUpdate
+
+
+undefined4 StartUpdate(void)
+
+{
+                    /* 0x1241  2  StartUpdate */
+  return 0x80004001;
+}
+
+
+#sigurno pocinje azuriranje/osvezavanje bodova ili necega tako...
+
+#GetFileVersionInfoSizeA
+
+
+DWORD GetFileVersionInfoSizeA(LPCSTR lptstrFilename,LPDWORD lpdwHandle)
+
+{
+  DWORD DVar1;
+  
+                    /* WARNING: Could not recover jumptable at 0x72d01256. Too many branches */
+                    /* WARNING: Treating indirect jump as call */
+  DVar1 = GetFileVersionInfoSizeA(lptstrFilename,lpdwHandle);
+  return DVar1;
+}
+
+
+#resava garant velicinu uzete verzije fajla
+
+#GetFileVersionInfoA
+
+
+BOOL GetFileVersionInfoA(LPCSTR lptstrFilename,DWORD dwHandle,DWORD dwLen,LPVOID lpData)
+
+{
+  BOOL BVar1;
+  
+                    /* WARNING: Could not recover jumptable at 0x72d01250. Too many branches */
+                    /* WARNING: Treating indirect jump as call */
+  BVar1 = GetFileVersionInfoA(lptstrFilename,dwHandle,dwLen,lpData);
+  return BVar1;
+}
+
+
+#uzima informacije verzije podatka
+
+#FUN_72d01260
+
+
+/* WARNING: Unable to track spacebase fully for stack */
+
+void FUN_72d01260(undefined1 param_1)
+
+{
+  uint in_EAX;
+  undefined1 *puVar1;
+  undefined4 unaff_retaddr;
+  
+  puVar1 = &param_1;
+  if (0xfff < in_EAX) {
+    do {
+      puVar1 = puVar1 + -0x1000;
+      in_EAX = in_EAX - 0x1000;
+    } while (0xfff < in_EAX);
+  }
+  *(undefined4 *)(puVar1 + (-4 - in_EAX)) = unaff_retaddr;
+  return;
+}
+
+
+#nemam objasnjenje sta li je ovde..
+
+#entry
+
+
+undefined4 entry(LPVOID param_1,int param_2)
+
+{
+  if (param_2 == 0) {
+    TlsFree(DAT_72d02000);
+  }
+  else {
+    if (param_2 == 1) {
+      DAT_72d02000 = TlsAlloc();
+      if (DAT_72d02000 == 0xffffffff) {
+        return 0;
+      }
+    }
+    else if (param_2 != 2) {
+      return 1;
+    }
+    TlsSetValue(DAT_72d02000,param_1);
+  }
+  return 1;
+}
+
+
+#Ulaz, valjda odavde sve u ovom .dll pocinje

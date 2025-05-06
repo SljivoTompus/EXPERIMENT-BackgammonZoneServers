@@ -1,0 +1,902 @@
+Ovde cu sve dekompilovane kodove upisati iz zClientm.dll
+#kao i uvek, # ce oznacavati objasnjenje, ime stringa, komentar i sl.
+
+#Launch
+
+
+LPCWSTR FUN_01004d97(int *param_1,LPCWSTR param_2,PCNZWCH param_3,undefined4 param_4,
+                    undefined4 param_5,uint *param_6)
+
+{
+  int iVar1;
+  LPCWSTR pWVar2;
+  
+  pWVar2 = (LPCWSTR)0x0;
+  iVar1 = lstrcmpiW(L"Launch",param_2);
+  if (iVar1 == 0) {
+    pWVar2 = FUN_01004ed1(param_3);
+    if ((int)pWVar2 < 0) {
+      (**(code **)(*param_1 + 8))(param_1);
+      *param_6 = 0xffffffff;
+    }
+    else if (pWVar2 != (LPCWSTR)0x0) {
+      (**(code **)(*param_1 + 8))(param_1);
+    }
+  }
+  else {
+    iVar1 = lstrcmpiW(L"Status",param_2);
+    *param_6 = -(uint)(iVar1 != 0) & 0xfffffffd;
+  }
+  return pWVar2;
+}
+
+
+#sigurno neki kod da pokrene nesto...
+
+#REGISTRY i module
+
+
+HKEY FUN_01002e98(undefined4 param_1,ushort param_2,int param_3,undefined4 *param_4)
+
+{
+  HKEY pHVar1;
+  undefined unaff_SI;
+  WCHAR local_424 [260];
+  WCHAR local_21c [260];
+  void *local_14 [4];
+  
+  FUN_01002fac(local_14);
+  GetModuleFileNameW(*(HMODULE *)(DAT_01008a00 + 4),local_424,0x104);
+  GetShortPathNameW(local_424,local_21c,0x104);
+  lstrlenW(local_21c);
+  FUN_010062d0(unaff_SI);
+  FUN_01002f79((short *)&stack0xfffffbd8,local_21c);
+  FUN_01002fc9(local_14,u_Module_0100710c,(LPCWSTR)&stack0xfffffbd8);
+  if (param_4 != (undefined4 *)0x0) {
+    for (; (LPCWSTR)*param_4 != (LPCWSTR)0x0; param_4 = param_4 + 2) {
+      FUN_01002fc9(local_14,(LPCWSTR)*param_4,(LPCWSTR)param_4[1]);
+    }
+  }
+  pHVar1 = FUN_010030d8(local_21c,(LPCWSTR)(uint)param_2,u_REGISTRY_010070f8,(uint)(param_3 != 0 ));
+  FUN_0100309f((int *)local_14);
+  free(local_14[0]);
+  return pHVar1;
+}
+
+
+#kod koji verovatno ispisuje i resava nesto u vezi registry stvari na windows
+#module je verovatno provera modela te neke funkcije
+
+#HKCU
+
+
+undefined4 FUN_010032f5(LPCWSTR param_1)
+
+{
+  int iVar1;
+  undefined **ppuVar2;
+  int iVar3;
+  
+  iVar3 = 0;
+  ppuVar2 = &PTR_u_HKCR_01001248;
+  do {
+    iVar1 = lstrcmpiW(param_1,(LPCWSTR)*ppuVar2);
+    if (iVar1 == 0) {
+      return (&DAT_0100124c)[iVar3 * 2];
+    }
+    ppuVar2 = ppuVar2 + 2;
+    iVar3 = iVar3 + 1;
+  } while ((int)ppuVar2 < 0x10012b8);
+  return 0;
+}
+
+
+#nemam blage sta bi trebao kod uraditi
+#moguce da nesto proverava/ispisuje/zapisuje
+
+#HKCR
+
+
+undefined4 FUN_010032f5(LPCWSTR param_1)
+
+{
+  int iVar1;
+  undefined **ppuVar2;
+  int iVar3;
+  
+  iVar3 = 0;
+  ppuVar2 = &PTR_u_HKCR_01001248;
+  do {
+    iVar1 = lstrcmpiW(param_1,(LPCWSTR)*ppuVar2);
+    if (iVar1 == 0) {
+      return (&DAT_0100124c)[iVar3 * 2];
+    }
+    ppuVar2 = ppuVar2 + 2;
+    iVar3 = iVar3 + 1;
+  } while ((int)ppuVar2 < 0x10012b8);
+  return 0;
+}
+
+
+#takode nemam pojma sta radi
+
+#RegServer
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int FUN_01004076(int param_1)
+
+{
+  bool bVar1;
+  LPCWSTR lpString1;
+  int iVar2;
+  BOOL BVar3;
+  HGDIOBJ ho;
+  undefined4 *puVar4;
+  WCHAR local_438 [256];
+  WCHAR local_238 [256];
+  tagMSG local_38;
+  undefined4 local_1c;
+  undefined2 uStack_18;
+  INITCOMMONCONTROLSEX local_14;
+  int local_c;
+  char local_5;
+  
+  local_c = 0;
+  local_14.dwICC = (DWORD)GetCommandLineW();
+  CoInitialize((LPVOID)0x0);
+  _DAT_01008b78 = &DAT_01007098;
+  DAT_01008a00 = &DAT_01008b08;
+  _DAT_01008b08 = 0x84;
+  _DAT_01008b6c = 0x300;
+  FUN_01004433((int *)&DAT_01008b08,0x10070b0,param_1);
+  _DAT_01008b9c = GetCurrentThreadId();
+  local_1c = DAT_01007290;
+  uStack_18 = DAT_01007294;
+  for (lpString1 = FUN_01004a2d((LPWSTR)local_14.dwICC,(LPCWSTR)&local_1c);
+      lpString1 != (LPCWSTR)0x0; lpString1 = FUN_01004a2d(lpString1,(LPCWSTR)&local_1c)) {
+    iVar2 = lstrcmpiW(lpString1,u_UnregServer_01007278);
+    if (iVar2 == 0) {
+      FUN_01002e98(&DAT_01008b08,100,0,(undefined4 *)0x0);
+      local_c = FUN_01004790((int *)&DAT_01008b08,1,(void *)0x0);
+LAB_0100421b:
+      if (local_c != 0) {
+        LoadStringW((HINSTANCE)0x0,1,local_238,0x200);
+        wsprintfW(local_438,local_238,local_c);
+        LoadStringW((HINSTANCE)0x0,2,local_238,0x200);
+        MessageBoxW((HWND)0x0,local_438,local_238,0x30);
+      }
+      goto LAB_01004278;
+    }
+    iVar2 = lstrcmpiW(lpString1,u_RegServer_01007264);
+    if (iVar2 == 0) {
+      FUN_01002e98(&DAT_01008b08,100,1,(undefined4 *)0x0);
+      local_c = FUN_01004637((int *)&DAT_01008b08,1,(void *)0x0);
+      goto LAB_0100421b;
+    }
+  }
+  local_14.dwSize = 8;
+  local_14.dwICC = 0x249;
+  InitCommonControlsEx(&local_14);
+  memset(&DAT_01008ba8,0,0x20);
+  memset(&DAT_01008a08,0,0x100);
+  memset(&DAT_01008d48,0,0x100);
+  memset(&DAT_01008e48,0,0x100);
+  memset(&DAT_01008c48,0,0x100);
+  memset(&DAT_01008bc8,0,0x80);
+  FUN_01003fec(&DAT_01008b08);
+  FUN_010044b6((int *)&DAT_01008b08,4,0);
+  DAT_01008f64 = CreateEventW((LPSECURITY_ATTRIBUTES)0x0,0,0,(LPCWSTR)0x0);
+  local_5 = '\x01';
+  do {
+    do {
+      bVar1 = false;
+      while (BVar3 = PeekMessageW(&local_38,(HWND)0x0,0,0,1), BVar3 != 0) {
+        if (local_38.message == 0x12) {
+          local_5 = '\0';
+          break;
+        }
+        bVar1 = true;
+        if (DAT_01008f50 == (int *)0x0) {
+          if ((DAT_01008f54 == (int *)0x0) ||
+             (iVar2 = (**(code **)(*DAT_01008f54 + 0x18))(DAT_01008f54,&local_38), iVar2 == 0)) {
+            TranslateMessage(&local_38);
+            DispatchMessageW(&local_38);
+          }
+        }
+        else {
+          (**(code **)(*DAT_01008f50 + 0x18))(DAT_01008f50,&local_38);
+        }
+      }
+      if ((DAT_01008f4c != (int *)0x0) &&
+         (iVar2 = (**(code **)(*DAT_01008f4c + 0x34))(DAT_01008f4c,1), iVar2 != -0x77fffffb)) {
+        bVar1 = true;
+      }
+    } while (bVar1);
+    if (local_5 == '\0') {
+      FUN_0100454b((int *)&DAT_01008b08);
+      Sleep(1000);
+LAB_01004278:
+      if (DAT_01008f54 != (int *)0x0) {
+        (**(code **)(*DAT_01008f54 + 0x20))(DAT_01008f54);
+        (**(code **)(*DAT_01008f54 + 8))(DAT_01008f54);
+        DAT_01008f54 = (int *)0x0;
+      }
+      if (DAT_01008f48 != (int *)0x0) {
+        FUN_01004eb4((int)DAT_01008f48);
+      }
+      if (DAT_01008f4c != (int *)0x0) {
+        (**(code **)(*DAT_01008f4c + 0x28))(DAT_01008f4c,0);
+        (**(code **)(*DAT_01008f4c + 8))(DAT_01008f4c);
+        DAT_01008f4c = (int *)0x0;
+      }
+      if (DAT_01008f64 != (HANDLE)0x0) {
+        CloseHandle(DAT_01008f64);
+        DAT_01008f64 = (HANDLE)0x0;
+      }
+      if (DAT_01008f50 != (int *)0x0) {
+        (**(code **)(*DAT_01008f50 + 0x14))(DAT_01008f50);
+        iVar2 = (**(code **)(*DAT_01008f50 + 0x5c))(DAT_01008f50);
+        if (iVar2 != 0) {
+          ho = (HGDIOBJ)(**(code **)(*DAT_01008f50 + 0x5c))(DAT_01008f50);
+          DeleteObject(ho);
+          (**(code **)(*DAT_01008f50 + 0x58))(DAT_01008f50,0);
+        }
+        (**(code **)(*DAT_01008f50 + 8))(DAT_01008f50);
+      }
+      iVar2 = 0;
+      if (0 < DAT_01008f60) {
+        puVar4 = &DAT_01008bc8;
+        do {
+          if ((HMODULE)*puVar4 != (HMODULE)0x0) {
+            FreeLibrary((HMODULE)*puVar4);
+            *puVar4 = 0;
+          }
+          iVar2 = iVar2 + 1;
+          puVar4 = puVar4 + 1;
+        } while (iVar2 < DAT_01008f60);
+      }
+      DAT_01008f60 = 0;
+      if (DAT_01008f48 != (int *)0x0) {
+        (**(code **)(*DAT_01008f48 + 8))(DAT_01008f48);
+        DAT_01008f48 = (int *)0x0;
+      }
+      FUN_01004587((int *)&DAT_01008b08);
+      CoUninitialize();
+      return local_c;
+    }
+    MsgWaitForMultipleObjects(1,&DAT_01008f64,0,0xffffffff,0xff);
+  } while( true );
+}
+
+
+#mozda nesto poput registrovanja necega za server ili sami server.
+#ima nekoliko izjasnjavajucih string funkcija
+
+#UnregServer
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int FUN_01004076(int param_1)
+
+{
+  bool bVar1;
+  LPCWSTR lpString1;
+  int iVar2;
+  BOOL BVar3;
+  HGDIOBJ ho;
+  undefined4 *puVar4;
+  WCHAR local_438 [256];
+  WCHAR local_238 [256];
+  tagMSG local_38;
+  undefined4 local_1c;
+  undefined2 uStack_18;
+  INITCOMMONCONTROLSEX local_14;
+  int local_c;
+  char local_5;
+  
+  local_c = 0;
+  local_14.dwICC = (DWORD)GetCommandLineW();
+  CoInitialize((LPVOID)0x0);
+  _DAT_01008b78 = &DAT_01007098;
+  DAT_01008a00 = &DAT_01008b08;
+  _DAT_01008b08 = 0x84;
+  _DAT_01008b6c = 0x300;
+  FUN_01004433((int *)&DAT_01008b08,0x10070b0,param_1);
+  _DAT_01008b9c = GetCurrentThreadId();
+  local_1c = DAT_01007290;
+  uStack_18 = DAT_01007294;
+  for (lpString1 = FUN_01004a2d((LPWSTR)local_14.dwICC,(LPCWSTR)&local_1c);
+      lpString1 != (LPCWSTR)0x0; lpString1 = FUN_01004a2d(lpString1,(LPCWSTR)&local_1c)) {
+    iVar2 = lstrcmpiW(lpString1,u_UnregServer_01007278);
+    if (iVar2 == 0) {
+      FUN_01002e98(&DAT_01008b08,100,0,(undefined4 *)0x0);
+      local_c = FUN_01004790((int *)&DAT_01008b08,1,(void *)0x0);
+LAB_0100421b:
+      if (local_c != 0) {
+        LoadStringW((HINSTANCE)0x0,1,local_238,0x200);
+        wsprintfW(local_438,local_238,local_c);
+        LoadStringW((HINSTANCE)0x0,2,local_238,0x200);
+        MessageBoxW((HWND)0x0,local_438,local_238,0x30);
+      }
+      goto LAB_01004278;
+    }
+    iVar2 = lstrcmpiW(lpString1,u_RegServer_01007264);
+    if (iVar2 == 0) {
+      FUN_01002e98(&DAT_01008b08,100,1,(undefined4 *)0x0);
+      local_c = FUN_01004637((int *)&DAT_01008b08,1,(void *)0x0);
+      goto LAB_0100421b;
+    }
+  }
+  local_14.dwSize = 8;
+  local_14.dwICC = 0x249;
+  InitCommonControlsEx(&local_14);
+  memset(&DAT_01008ba8,0,0x20);
+  memset(&DAT_01008a08,0,0x100);
+  memset(&DAT_01008d48,0,0x100);
+  memset(&DAT_01008e48,0,0x100);
+  memset(&DAT_01008c48,0,0x100);
+  memset(&DAT_01008bc8,0,0x80);
+  FUN_01003fec(&DAT_01008b08);
+  FUN_010044b6((int *)&DAT_01008b08,4,0);
+  DAT_01008f64 = CreateEventW((LPSECURITY_ATTRIBUTES)0x0,0,0,(LPCWSTR)0x0);
+  local_5 = '\x01';
+  do {
+    do {
+      bVar1 = false;
+      while (BVar3 = PeekMessageW(&local_38,(HWND)0x0,0,0,1), BVar3 != 0) {
+        if (local_38.message == 0x12) {
+          local_5 = '\0';
+          break;
+        }
+        bVar1 = true;
+        if (DAT_01008f50 == (int *)0x0) {
+          if ((DAT_01008f54 == (int *)0x0) ||
+             (iVar2 = (**(code **)(*DAT_01008f54 + 0x18))(DAT_01008f54,&local_38), iVar2 == 0)) {
+            TranslateMessage(&local_38);
+            DispatchMessageW(&local_38);
+          }
+        }
+        else {
+          (**(code **)(*DAT_01008f50 + 0x18))(DAT_01008f50,&local_38);
+        }
+      }
+      if ((DAT_01008f4c != (int *)0x0) &&
+         (iVar2 = (**(code **)(*DAT_01008f4c + 0x34))(DAT_01008f4c,1), iVar2 != -0x77fffffb)) {
+        bVar1 = true;
+      }
+    } while (bVar1);
+    if (local_5 == '\0') {
+      FUN_0100454b((int *)&DAT_01008b08);
+      Sleep(1000);
+LAB_01004278:
+      if (DAT_01008f54 != (int *)0x0) {
+        (**(code **)(*DAT_01008f54 + 0x20))(DAT_01008f54);
+        (**(code **)(*DAT_01008f54 + 8))(DAT_01008f54);
+        DAT_01008f54 = (int *)0x0;
+      }
+      if (DAT_01008f48 != (int *)0x0) {
+        FUN_01004eb4((int)DAT_01008f48);
+      }
+      if (DAT_01008f4c != (int *)0x0) {
+        (**(code **)(*DAT_01008f4c + 0x28))(DAT_01008f4c,0);
+        (**(code **)(*DAT_01008f4c + 8))(DAT_01008f4c);
+        DAT_01008f4c = (int *)0x0;
+      }
+      if (DAT_01008f64 != (HANDLE)0x0) {
+        CloseHandle(DAT_01008f64);
+        DAT_01008f64 = (HANDLE)0x0;
+      }
+      if (DAT_01008f50 != (int *)0x0) {
+        (**(code **)(*DAT_01008f50 + 0x14))(DAT_01008f50);
+        iVar2 = (**(code **)(*DAT_01008f50 + 0x5c))(DAT_01008f50);
+        if (iVar2 != 0) {
+          ho = (HGDIOBJ)(**(code **)(*DAT_01008f50 + 0x5c))(DAT_01008f50);
+          DeleteObject(ho);
+          (**(code **)(*DAT_01008f50 + 0x58))(DAT_01008f50,0);
+        }
+        (**(code **)(*DAT_01008f50 + 8))(DAT_01008f50);
+      }
+      iVar2 = 0;
+      if (0 < DAT_01008f60) {
+        puVar4 = &DAT_01008bc8;
+        do {
+          if ((HMODULE)*puVar4 != (HMODULE)0x0) {
+            FreeLibrary((HMODULE)*puVar4);
+            *puVar4 = 0;
+          }
+          iVar2 = iVar2 + 1;
+          puVar4 = puVar4 + 1;
+        } while (iVar2 < DAT_01008f60);
+      }
+      DAT_01008f60 = 0;
+      if (DAT_01008f48 != (int *)0x0) {
+        (**(code **)(*DAT_01008f48 + 8))(DAT_01008f48);
+        DAT_01008f48 = (int *)0x0;
+      }
+      FUN_01004587((int *)&DAT_01008b08);
+      CoUninitialize();
+      return local_c;
+    }
+    MsgWaitForMultipleObjects(1,&DAT_01008f64,0,0xffffffff,0xff);
+  } while( true );
+}
+
+
+#ponistavanje prethodne funkcije
+#zapravo odjava/brisanje servera
+
+#UnRegisterTypeLib
+
+
+HRESULT FUN_01004805(int param_1,TLIBATTR *param_2)
+
+{
+  HRESULT HVar1;
+  HRESULT HVar2;
+  HMODULE hModule;
+  FARPROC pFVar3;
+  undefined2 extraout_var;
+  BSTR local_c;
+  ITypeLib *local_8;
+  
+  local_c = (BSTR)0x0;
+  local_8 = (ITypeLib *)0x0;
+  HVar1 = FUN_010048a6(param_1,(LPCWSTR)param_2,&local_c,&local_8);
+  if (-1 < HVar1) {
+    HVar2 = (*local_8->lpVtbl->GetLibAttr)(local_8,&param_2);
+    if (-1 < HVar2) {
+      hModule = LoadLibraryW(u_oleaut32.dll_010072ac);
+      if (hModule != (HMODULE)0x0) {
+        pFVar3 = GetProcAddress(hModule,s_UnRegisterTypeLib_01007298);
+        if (pFVar3 != (FARPROC)0x0) {
+          (*pFVar3)(param_2,CONCAT22(extraout_var,param_2->wMajorVerNum),
+                    CONCAT22(extraout_var,param_2->wMinorVerNum),param_2->lcid,param_2->syskind) ;
+        }
+        FreeLibrary(hModule);
+      }
+      (*local_8->lpVtbl->ReleaseTLibAttr)(local_8,param_2);
+    }
+  }
+  if (local_8 != (ITypeLib *)0x0) {
+    (*local_8->lpVtbl->Release)(local_8);
+  }
+  SysFreeString(local_c);
+  return HVar1;
+}
+
+
+#verovatno odjavljivanje bibliotetski tip neki.
+#ovaj kod takode se veze za oleaut32.dll
+
+#.tlb
+
+
+HRESULT FUN_010048a6(int param_1,LPCWSTR param_2,undefined4 *param_3,ITypeLib **param_4)
+
+{
+  HRESULT HVar1;
+  LPCWSTR lpsz;
+  BSTR pOVar2;
+  LPCWSTR lpString1;
+  uint local_220 [135];
+  
+  *param_3 = 0;
+  *param_4 = (ITypeLib *)0x0;
+  GetModuleFileNameW(*(HMODULE *)(param_1 + 0xc),(LPWSTR)local_220,0x104);
+  if (param_2 != (LPCWSTR)0x0) {
+    lstrcatW((LPWSTR)local_220,param_2);
+  }
+  HVar1 = LoadTypeLib((LPCOLESTR)local_220,param_4);
+  if (-1 < HVar1) goto LAB_0100494d;
+  lpString1 = (LPCWSTR)0x0;
+  lpsz = (LPCWSTR)local_220;
+  if ((short)local_220[0] == 0) {
+LAB_0100492f:
+    lpString1 = lpsz;
+  }
+  else {
+    do {
+      if ((short)local_220[0] == 0x2e) {
+        lpString1 = lpsz;
+      }
+      lpsz = CharNextW(lpsz);
+      local_220[0] = (uint)(ushort)*lpsz;
+    } while (*lpsz != L'\0');
+    if (lpString1 == (LPCWSTR)0x0) goto LAB_0100492f;
+  }
+  lstrcpyW(lpString1,u_.tlb_010072c8);
+  HVar1 = LoadTypeLib((LPCOLESTR)local_220,param_4);
+  if (HVar1 < 0) {
+    return HVar1;
+  }
+LAB_0100494d:
+  pOVar2 = SysAllocString((OLECHAR *)local_220);
+  *param_3 = pOVar2;
+  return HVar1;
+}
+
+
+#ovaj mi izgleda da pronalazi modele iz biblioteke
+#takode neke charts pise, valjda...
+
+#SLEDECI STRINGOVI KORISTE ISTI SLEDECI KOD
+#Zone
+#store
+#channel
+#lang
+#name
+#family
+#datafile
+#game
+#setup
+
+
+/* WARNING: Removing unreachable block (ram,0x010057b2) */
+/* WARNING: Removing unreachable block (ram,0x0100534b) */
+/* WARNING: Removing unreachable block (ram,0x01005354) */
+/* WARNING: Removing unreachable block (ram,0x0100535f) */
+/* WARNING: Removing unreachable block (ram,0x01005370) */
+/* WARNING: Removing unreachable block (ram,0x010053a5) */
+/* WARNING: Removing unreachable block (ram,0x0100538f) */
+/* WARNING: Removing unreachable block (ram,0x010053ab) */
+/* WARNING: Removing unreachable block (ram,0x010053c5) */
+/* WARNING: Removing unreachable block (ram,0x010053d3) */
+/* WARNING: Removing unreachable block (ram,0x010053f5) */
+/* WARNING: Removing unreachable block (ram,0x01005405) */
+/* WARNING: Removing unreachable block (ram,0x0100547c) */
+/* WARNING: Removing unreachable block (ram,0x01005541) */
+/* WARNING: Removing unreachable block (ram,0x01005555) */
+/* WARNING: Removing unreachable block (ram,0x01005563) */
+/* WARNING: Removing unreachable block (ram,0x0100555f) */
+/* WARNING: Removing unreachable block (ram,0x01005599) */
+/* WARNING: Removing unreachable block (ram,0x010055ae) */
+/* WARNING: Removing unreachable block (ram,0x010055e9) */
+/* WARNING: Removing unreachable block (ram,0x010055e5) */
+/* WARNING: Removing unreachable block (ram,0x01005620) */
+/* WARNING: Removing unreachable block (ram,0x01005641) */
+/* WARNING: Removing unreachable block (ram,0x01005678) */
+/* WARNING: Removing unreachable block (ram,0x0100569d) */
+/* WARNING: Removing unreachable block (ram,0x01005699) */
+/* WARNING: Removing unreachable block (ram,0x010056ce) */
+/* WARNING: Removing unreachable block (ram,0x010056de) */
+/* WARNING: Removing unreachable block (ram,0x010056e5) */
+/* WARNING: Removing unreachable block (ram,0x010056ee) */
+/* WARNING: Removing unreachable block (ram,0x0100570c) */
+/* WARNING: Removing unreachable block (ram,0x01005719) */
+/* WARNING: Removing unreachable block (ram,0x01005737) */
+/* WARNING: Removing unreachable block (ram,0x0100573d) */
+/* WARNING: Removing unreachable block (ram,0x01005744) */
+/* WARNING: Removing unreachable block (ram,0x0100574a) */
+/* WARNING: Removing unreachable block (ram,0x01005751) */
+/* WARNING: Removing unreachable block (ram,0x01005757) */
+/* WARNING: Removing unreachable block (ram,0x01005425) */
+/* WARNING: Removing unreachable block (ram,0x01005448) */
+/* WARNING: Removing unreachable block (ram,0x0100544e) */
+/* WARNING: Removing unreachable block (ram,0x01005455) */
+/* WARNING: Removing unreachable block (ram,0x0100545b) */
+/* WARNING: Removing unreachable block (ram,0x01005462) */
+/* WARNING: Removing unreachable block (ram,0x01005468) */
+/* WARNING: Removing unreachable block (ram,0x0100546f) */
+/* WARNING: Removing unreachable block (ram,0x01005475) */
+/* WARNING: Removing unreachable block (ram,0x0100575e) */
+/* WARNING: Removing unreachable block (ram,0x01005764) */
+/* WARNING: Removing unreachable block (ram,0x0100576b) */
+/* WARNING: Removing unreachable block (ram,0x01005771) */
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+LPCWSTR FUN_01004ed1(PCNZWCH param_1)
+
+{
+  undefined4 uVar1;
+  HMODULE pHVar2;
+  int *piVar3;
+  LPCWSTR pWVar4;
+  int iVar5;
+  int *extraout_ECX;
+  undefined1 unaff_BP;
+  undefined4 *puVar6;
+  WCHAR local_c00 [260];
+  WCHAR local_9f8 [262];
+  WCHAR local_7ec [256];
+  WCHAR local_5ec [256];
+  WCHAR local_3ec [128];
+  WCHAR local_2ec [128];
+  int local_1ec [32];
+  undefined4 local_16c [2];
+  undefined *local_70;
+  undefined *puStack_6c;
+  int *piStack_68;
+  undefined *puStack_64;
+  undefined *puStack_60;
+  uint uVar7;
+  uint uVar8;
+  int *piVar9;
+  int *piVar10;
+  uint uVar11;
+  
+  FUN_010062d0(unaff_BP);
+  (**(code **)(*extraout_ECX + 4))();
+  memset(local_2ec,0,0x100);
+  memset(&local_70,0,0x20);
+  uVar7 = 0x20;
+  memset(&stack0xffffffb0,0,0x20);
+  memset(local_7ec,0,0x200);
+  memset(local_5ec,0,0x200);
+  puStack_60 = (undefined *)0x1004f59;
+  memset(local_1ec,0,0x80);
+  memset(local_16c,0,0x80);
+  uVar1 = FUN_01005e4d(u_store_0100739c,param_1,(LPWSTR)&local_70,0x10);
+  if ((char)uVar1 != '\0') {
+    FUN_0100607c((ushort *)&local_70);
+  }
+  uVar1 = FUN_01005e4d(u_channel_0100738c,param_1,(LPWSTR)&stack0xffffffb0,0x10);
+  if ((char)uVar1 != '\0') {
+    DAT_010070a8 = FUN_0100607c((ushort *)&stack0xffffffb0);
+  }
+  uVar1 = FUN_01005f86(param_1,(LPWSTR)&DAT_01008c48,0x80,&DAT_01008f58);
+  if ((char)uVar1 != '\0') {
+    uVar1 = FUN_01005e4d(u_lang_01007380,param_1,(LPWSTR)&DAT_01008ba8,0x10);
+    if ((char)uVar1 == '\0') {
+      lstrcpyW((LPWSTR)&DAT_01008ba8,(LPCWSTR)&DAT_01007378);
+    }
+    uVar1 = FUN_01005e4d((LPCWSTR)&DAT_01007370,param_1,(LPWSTR)&DAT_01008a08,0x80);
+    if ((((((char)uVar1 != '\0') &&
+          (uVar1 = FUN_01005e4d(u_name_01007364,param_1,(LPWSTR)&DAT_01008e48,0x80),
+          (char)uVar1 != '\0')) &&
+         (uVar1 = FUN_01005e4d(u_family_01007354,param_1,(LPWSTR)&DAT_01008d48,0x80),
+         (char)uVar1 != '\0')) &&
+        ((uVar1 = FUN_01005e4d((LPCWSTR)&DAT_0100734c,param_1,local_5ec,0x100), (char)uVar1 != ' \0'
+         && (uVar1 = FUN_01005e4d(u_datafile_01007338,param_1,local_7ec,0x100), (char)uVar1 != ' \0')
+         ))) && ((uVar1 = FUN_01005e4d(u_game_0100732c,param_1,local_2ec,0x80), (char)uVar1 != ' \0'
+                 && (uVar1 = FUN_01005e4d((LPCWSTR)&DAT_01007324,param_1,local_9f8,0x105),
+                    (char)uVar1 != '\0')))) {
+      uVar8 = 0x10050d6;
+      uVar1 = FUN_01005e4d(u_setup_01007318,param_1,local_3ec,0x80);
+      if ((char)uVar1 != '\0') {
+        FUN_01005fff((ushort *)local_5ec,local_16c,(uint *)&stack0xffffffd0);
+        uVar1 = FUN_01005fff((ushort *)local_7ec,local_1ec,(uint *)&stack0xffffffd8);
+        if ((char)uVar1 != '\0') {
+          uVar11 = 0;
+          if (uVar8 != 0) {
+            piVar3 = local_1ec;
+            do {
+              if (*piVar3 != 0) {
+                uVar8 = 0x100514a;
+                wsprintfW(local_c00,u_%s\%s_0100730c);
+                pHVar2 = LoadLibraryW(local_c00);
+                iVar5 = DAT_01008f60;
+                if (pHVar2 != (HMODULE)0x0) {
+                  DAT_01008f60 = DAT_01008f60 + 1;
+                  *piVar3 = 0;
+                  (&DAT_01008bc8)[iVar5] = pHVar2;
+                }
+              }
+              uVar11 = uVar11 + 1;
+              piVar3 = piVar3 + 1;
+            } while (uVar11 < uVar8);
+          }
+          uVar11 = 0;
+          if (uVar8 != 0) {
+            piVar3 = local_1ec;
+            do {
+              if (((LPCWSTR)*piVar3 != (LPCWSTR)0x0) &&
+                 (pHVar2 = LoadLibraryW((LPCWSTR)*piVar3), iVar5 = DAT_01008f60,
+                 pHVar2 != (HMODULE)0x0)) {
+                DAT_01008f60 = DAT_01008f60 + 1;
+                (&DAT_01008bc8)[iVar5] = pHVar2;
+              }
+              uVar11 = uVar11 + 1;
+              piVar3 = piVar3 + 1;
+            } while (uVar11 < uVar8);
+          }
+          iVar5 = DAT_01008f60;
+          uVar11 = 0;
+          if (uVar8 != 0) {
+            piVar3 = &DAT_01008bc8;
+            do {
+              if (*piVar3 == 0) {
+                return (LPCWSTR)0x80004005;
+              }
+              uVar11 = uVar11 + 1;
+              piVar3 = piVar3 + 1;
+            } while (uVar11 < uVar8);
+          }
+          DAT_01008f60 = DAT_01008f60 + 1;
+          (&DAT_01008bc8)[iVar5] = 0;
+        }
+        uVar8 = 0;
+        if (uVar7 == 0) {
+          return (LPCWSTR)0x80004005;
+        }
+        puVar6 = local_16c;
+        do {
+          uVar7 = 0x100521a;
+          pWVar4 = FUN_010058d9((int *)&DAT_01008b90,(LPCWSTR)*puVar6,0,(undefined4 *)&DAT_01002a 40,
+                                &DAT_01002a50,0x1008f50);
+          if (-1 < (int)pWVar4) goto LAB_01005234;
+          uVar8 = uVar8 + 1;
+          puVar6 = puVar6 + 1;
+        } while (uVar8 < uVar7);
+        if ((int)pWVar4 < 0) {
+          return pWVar4;
+        }
+LAB_01005234:
+        iVar5 = (**(code **)(*DAT_01008f50 + 0xc))();
+        if (iVar5 < 0) {
+          (**(code **)(*DAT_01008f50 + 0x14))();
+          (**(code **)(*DAT_01008f50 + 8))();
+          DAT_01008f50 = (int *)0x0;
+        }
+        else {
+          piVar10 = (int *)0x0;
+          piVar3 = (int *)0x0;
+          piVar9 = (int *)0x0;
+          (**(code **)(*DAT_01008f50 + 0x74))();
+          (**(code **)(*DAT_01008f50 + 0x74))();
+          (**(code **)(*DAT_01008f50 + 0x74))();
+          puStack_60 = &DAT_01002770;
+          puStack_64 = &DAT_010027e0;
+          piStack_68 = DAT_01008f50;
+          puStack_6c = (undefined *)0x10052e9;
+          (**(code **)(*DAT_01008f50 + 0x74))();
+          puStack_6c = &stack0xfffffff0;
+          local_70 = &LAB_010026e0;
+          (**(code **)(*DAT_01008f50 + 0x74))();
+          FUN_01005857(&stack0xffffffe4,(undefined4 *)0x0);
+          _DAT_01008b8c = piVar3;
+          piVar3 = _DAT_01008b8c;
+          FUN_01005a07((int *)&DAT_01008b90,(int)_DAT_01008b8c);
+          (**(code **)(*DAT_01008f4c + 0x28))();
+          (**(code **)(*DAT_01008f50 + 0x14))();
+          (**(code **)(*DAT_01008f50 + 8))();
+          DAT_01008f50 = (int *)0x0;
+          if (piVar9 != (int *)0x0) {
+            (**(code **)(*piVar9 + 8))();
+          }
+          if (piVar3 != (int *)0x0) {
+            (**(code **)(*piVar3 + 8))();
+          }
+          if (piVar10 != (int *)0x0) {
+            (**(code **)(*piVar10 + 8))();
+          }
+        }
+      }
+    }
+  }
+  return (LPCWSTR)0x80004005;
+}
+
+
+#Ovaj kod bi mogao nam dosta toga da objasni i opise funkcija
+
+#GetVersionPack
+#zeeverm.dll
+
+
+int FUN_01005807(undefined4 param_1,undefined4 param_2)
+
+{
+  HMODULE hModule;
+  FARPROC pFVar1;
+  int iVar2;
+  
+  hModule = LoadLibraryA(s_zeeverm.dll_010073b8);
+  if (hModule != (HMODULE)0x0) {
+    pFVar1 = GetProcAddress(hModule,s_GetVersionPack_010073a8);
+    if (pFVar1 != (FARPROC)0x0) {
+      iVar2 = (*pFVar1)(param_1,param_2);
+      goto LAB_01005845;
+    }
+  }
+  SetLastError(1);
+  iVar2 = -0x7fffbfff;
+LAB_01005845:
+  if (hModule != (HMODULE)0x0) {
+    FreeLibrary(hModule);
+  }
+  return iVar2;
+}
+
+
+#ovaj kod se bazira preko biblioteke i mozda se tako kako sluzi sa zeeverm.dll
+
+#DllGetClassObject
+#DllCanUnloadNow
+#SetResourceManager
+
+
+undefined4 FUN_01005bbe(undefined4 *param_1,LPCWSTR param_2,int param_3)
+
+{
+  HMODULE hModule;
+  FARPROC pFVar1;
+  int iVar2;
+  LPWSTR lpString1;
+  undefined4 uVar3;
+  
+  if ((param_2 == (LPCWSTR)0x0) || (*param_2 == L'\0')) {
+    uVar3 = 0x80070057;
+  }
+  else {
+    hModule = LoadLibraryW(param_2);
+    param_1[3] = hModule;
+    if (hModule == (HMODULE)0x0) {
+      uVar3 = 0x88000001;
+    }
+    else {
+      pFVar1 = GetProcAddress(hModule,s_SetResourceManager_01008590);
+      param_1[2] = pFVar1;
+      pFVar1 = GetProcAddress((HMODULE)param_1[3],s_DllCanUnloadNow_01008580);
+      param_1[1] = pFVar1;
+      pFVar1 = GetProcAddress((HMODULE)param_1[3],s_DllGetClassObject_0100856c);
+      *param_1 = pFVar1;
+      if (pFVar1 == (FARPROC)0x0) {
+        uVar3 = 0x88000002;
+      }
+      else {
+        iVar2 = lstrlenW(param_2);
+        lpString1 = (LPWSTR)FUN_01005d00(iVar2 * 2 + 2);
+        param_1[4] = lpString1;
+        if (lpString1 != (LPWSTR)0x0) {
+          lstrcpyW(lpString1,param_2);
+          if ((code *)param_1[2] == (code *)0x0) {
+            return 0;
+          }
+          if (param_3 == 0) {
+            return 0;
+          }
+          (*(code *)param_1[2])(param_3);
+          *(undefined *)(param_1 + 7) = 1;
+          return 0;
+        }
+        uVar3 = 0x8007000e;
+      }
+    }
+  }
+  param_1[5] = 0;
+  *param_1 = 0;
+  param_1[1] = 0;
+  if (param_1[4] != 0) {
+    FUN_01005d2c(param_1[4]);
+    param_1[4] = 0;
+  }
+  if ((HMODULE)param_1[3] != (HMODULE)0x0) {
+    FreeLibrary((HMODULE)param_1[3]);
+    param_1[3] = 0;
+  }
+  return uVar3;
+}
+
+
+#neki kod koji se vrti oko onog da uzme klasu od dll objekta
+#Zatim dobije signal da se dll moze unload odmah
+
+#server
+
+
+uint FUN_01005f86(PCNZWCH param_1,LPWSTR param_2,int param_3,int *param_4)
+
+{
+  undefined2 *in_EAX;
+  int iVar1;
+  LPWSTR pWVar2;
+  WCHAR local_204 [256];
+  
+  if ((((param_1 != (PCNZWCH)0x0) && (param_2 != (LPWSTR)0x0)) && (param_4 != (int *)0x0)) &&
+     ((in_EAX = (undefined2 *)FUN_01005e4d(u_server_010085a4,param_1,local_204,0x100),
+      (char)in_EAX != '\0' &&
+      (in_EAX = (undefined2 *)FUN_01006144(local_204,0x3a), in_EAX != (undefined2 *)0x0)))) {
+    *in_EAX = 0;
+    iVar1 = FUN_0100607c(in_EAX + 1);
+    *param_4 = iVar1;
+    pWVar2 = lstrcpynW(param_2,local_204,param_3);
+    return CONCAT31((int3)((uint)pWVar2 >> 8),1);
+  }
+  return (uint)in_EAX & 0xffffff00;
+}
+
+
+#Mozda nesto poprilicno kljucno i vezano za server.
