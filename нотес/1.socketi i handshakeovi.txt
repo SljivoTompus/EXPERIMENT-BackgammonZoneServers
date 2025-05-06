@@ -1,0 +1,2016 @@
+pocetak handshakea je po mom misljenju u manjem smislu u ZNetM.dll
+#KODOVI, krenuvsi od ZoneNetworkLoginMutex
+
+undefined4 FUN_73aa22ee(void)
+
+{
+  undefined4 uVar1;
+  BOOL BVar2;
+  _SECURITY_ATTRIBUTES *lpMutexAttributes;
+  WSADATA local_1b8;
+  undefined local_28 [20];
+  _SECURITY_ATTRIBUTES local_14;
+  int local_8;
+  
+  local_8 = WSAStartup(0x101,&local_1b8);
+  if (local_8 == 0) {
+    lpMutexAttributes = (LPSECURITY_ATTRIBUTES)0x0;
+    BVar2 = InitializeSecurityDescriptor(local_28,1);
+    if (BVar2 != 0) {
+      BVar2 = SetSecurityDescriptorDacl(local_28,1,(PACL)0x0,0);
+      if (BVar2 != 0) {
+        local_14.lpSecurityDescriptor = local_28;
+        local_14.nLength = 0xc;
+        local_14.bInheritHandle = 1;
+        lpMutexAttributes = &local_14;
+      }
+    }
+    DAT_73aa789c = CreateMutexW(lpMutexAttributes,0,u_ZoneNetworkLoginMutex_73aa7108);
+    FUN_73aa3611();
+    DAT_73aa7898 = 1;
+    uVar1 = 0;
+  }
+  else {
+    local_8 = WSAGetLastError();
+    FUN_73aa6325(0xe1110000,0,(LPCWSTR *)0x0,4,&local_8);
+    uVar1 = 0x3eb;
+  }
+  return uVar1;
+}
+
+#Smatram da ovaj string oravi Mutrex i ukoliko ga vec ima prisutnog onda izbaci greskju i prekida vezu.
+#Error associating socket w/comp (FUN_)73aa7134
+
+int * __thiscall
+FUN_73aa2636(void *this,char *param_1,u_short *param_2,undefined4 param_3,undefined4 param_4,
+            undefined4 param_5)
+
+{
+  HANDLE pvVar1;
+  int *CompletionKey;
+  int iVar2;
+  
+                    /* WARNING: Load size is inaccurate */
+  if ((*this == 0) &&
+     (pvVar1 = (HANDLE)FUN_73aa3210(this,param_2,1,param_1,(char *)&param_2,(char *)&param_1),
+     pvVar1 != (HANDLE)0xffffffff)) {
+    CompletionKey = FUN_73aa3a36(this,pvVar1,param_2,param_1,0x38,param_3,param_4,param_5);
+    if (CompletionKey == (int *)0x0) {
+      return (int *)0x0;
+    }
+    if ((*(int *)((int)this + 0x6c) == 0) ||
+       (pvVar1 = CreateIoCompletionPort
+                           (pvVar1,*(HANDLE *)((int)this + 4),(ULONG_PTR)CompletionKey,0),
+       pvVar1 != (HANDLE)0x0)) {
+      iVar2 = FUN_73aa2ef9(this,(size_t)CompletionKey);
+      if ((iVar2 != 0) && (iVar2 = FUN_73aa3e17(CompletionKey), iVar2 != 0)) {
+        *(byte *)((int)CompletionKey + 0x31) = *(byte *)((int)CompletionKey + 0x31) | 0x80;
+        InterlockedIncrement((LONG *)((int)this + 0x34));
+        FUN_73aa26ff(CompletionKey);
+        return CompletionKey;
+      }
+      FUN_73aa3af2(CompletionKey);
+      FUN_73aa26ff(CompletionKey);
+    }
+    else {
+      GetLastError();
+      FUN_73aa5f49(s_Error_associating_socket_w/_comp_73aa7134);
+      FUN_73aa3af2(CompletionKey);
+    }
+  }
+  return (int *)0x0;
+}
+
+
+#Neki kod koji izbacuje gresku ukoliko se nesto u vezi soketa(korisnika) desi.
+#GetQueuedCompletionStatus
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __thiscall FUN_73aa28be(void *this,undefined *param_1,undefined4 param_2,DWORD param_3)
+
+{
+  DWORD DVar1;
+  uint uVar2;
+  undefined4 *puVar3;
+  DWORD DVar4;
+  int iVar5;
+  HANDLE hProcess;
+  undefined4 *puVar6;
+  code *pcVar7;
+  bool bVar8;
+  SIZE_T dwMinimumWorkingSetSize;
+  SIZE_T dwMaximumWorkingSetSize;
+  int iStack_28;
+  DWORD DStack_24;
+  LPOVERLAPPED p_Stack_20;
+  void *pvStack_1c;
+  DWORD DStack_18;
+  LPCRITICAL_SECTION local_14;
+  DWORD DStack_10;
+  int *piStack_c;
+  DWORD local_8;
+  DWORD local_4;
+  
+  if (param_1 != (undefined *)0x0) {
+    (*(code *)param_1)(param_2);
+  }
+  *(undefined4 *)this = 0;
+  local_8 = GetTickCount();
+  *(DWORD *)((int)this + 0x3b0) = local_8;
+  local_14 = (LPCRITICAL_SECTION)((int)this + 0x70);
+  local_4 = local_8;
+  EnterCriticalSection(local_14);
+  DStack_10 = GetTickCount();
+LAB_73aa2908:
+  do {
+                    /* WARNING: Load size is inaccurate */
+    if ((*this != 0) && (*(int *)((int)this + 0x38) <= *(int *)((int)this + 0x34))) {
+      LeaveCriticalSection(local_14);
+      return;
+    }
+    DStack_18 = 0;
+    pvStack_1c = (void *)0x0;
+    DStack_24 = 0;
+    p_Stack_20 = (LPOVERLAPPED)0x0;
+    LeaveCriticalSection(local_14);
+    pcVar7 = EnterCriticalSection_exref;
+    if (DAT_73aa7880 != 0) {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      DVar1 = GetTickCount();
+      if (DVar1 < DStack_10) {
+        uVar2 = (DVar1 - DStack_10) - 1;
+      }
+      else {
+        uVar2 = DVar1 - DStack_10;
+      }
+      bVar8 = CARRY4(_DAT_73aa7960,uVar2);
+      _DAT_73aa7960 = _DAT_73aa7960 + uVar2;
+      _DAT_73aa7964 = _DAT_73aa7964 + (uint)bVar8;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    }
+    iStack_28 = 0;
+    if (*(int *)((int)this + 0x6c) == 0) {
+      if (param_1 == (undefined *)0x0) {
+        DVar1 = WaitForMultipleObjects
+                          (*(DWORD *)((int)this + 0x90),(HANDLE *)((int)this + 0x94),0,
+                           *(DWORD *)((int)this + 0x10));
+      }
+      else {
+        DVar1 = MsgWaitForMultipleObjects
+                          (*(DWORD *)((int)this + 0x90),(HANDLE *)((int)this + 0x94),0,
+                           *(DWORD *)((int)this + 0x10),param_3);
+      }
+      if (DVar1 == 0) {
+        ResetEvent(*(HANDLE *)((int)this + 0x88));
+LAB_73aa2b2a:
+        if (param_1 != (undefined *)0x0) {
+          (*(code *)param_1)(param_2);
+        }
+        SetLastError(0x102);
+      }
+      else if (DVar1 == 1) {
+        ResetEvent(*(HANDLE *)((int)this + 0x8c));
+        iStack_28 = 1;
+      }
+      else {
+        if (DVar1 == 0x102) goto LAB_73aa2b2a;
+        if (DVar1 != 0xffffffff) {
+          if (DVar1 == *(DWORD *)((int)this + 0x90)) goto LAB_73aa2b2a;
+          iStack_28 = 1;
+          pvStack_1c = *(void **)((int)this + DVar1 * 8 + 0x194);
+          p_Stack_20 = *(LPOVERLAPPED *)((int)this + DVar1 * 8 + 0x198);
+          if (((pvStack_1c != (void *)0x0) && (p_Stack_20 != (LPOVERLAPPED)0x0)) &&
+             ((*(byte *)((int)&p_Stack_20[1].Internal + 3) & 0x80) != 0)) {
+            iStack_28 = GetOverlappedResult(*(HANDLE *)((int)pvStack_1c + 0x24),p_Stack_20,
+                                            &DStack_18,1);
+          }
+          EnterCriticalSection((LPCRITICAL_SECTION)((int)this + 0x394));
+          if ((p_Stack_20 != (LPOVERLAPPED)0x0) &&
+             ((*(ushort *)((int)&p_Stack_20[1].Internal + 2) & 0x111) == 0)) {
+            CloseHandle(*(HANDLE *)((int)this + DVar1 * 4 + 0x94));
+            *(undefined4 *)((int)this + DVar1 * 4 + 0x94) = 0;
+            pcVar7 = EnterCriticalSection_exref;
+            p_Stack_20->hEvent = (HANDLE)0x0;
+          }
+          uVar2 = DVar1 + 1;
+          if (uVar2 < *(uint *)((int)this + 0x90)) {
+            puVar3 = (undefined4 *)((int)this + uVar2 * 8 + 0x18c);
+            puVar6 = (undefined4 *)((int)this + uVar2 * 4 + 0x90);
+            do {
+              uVar2 = uVar2 + 1;
+              *puVar6 = puVar6[1];
+              *puVar3 = puVar3[2];
+              puVar3[1] = puVar3[3];
+              puVar6 = puVar6 + 1;
+              puVar3 = puVar3 + 2;
+            } while (uVar2 < *(uint *)((int)this + 0x90));
+          }
+          *(int *)((int)this + 0x90) = *(int *)((int)this + 0x90) + -1;
+          *(undefined4 *)((int)this + *(int *)((int)this + 0x90) * 4 + 0x94) = 0;
+          *(undefined4 *)((int)this + *(int *)((int)this + 0x90) * 8 + 0x194) = 0;
+          *(undefined4 *)((int)this + *(int *)((int)this + 0x90) * 8 + 0x198) = 0;
+          LeaveCriticalSection((LPCRITICAL_SECTION)((int)this + 0x394));
+        }
+      }
+    }
+    else {
+      iStack_28 = GetQueuedCompletionStatus
+                            (*(HANDLE *)((int)this + 4),&DStack_18,(PULONG_PTR)&pvStack_1c,
+                             &p_Stack_20,*(DWORD *)((int)this + 0x10));
+    }
+    DStack_10 = GetTickCount();
+    local_14 = (LPCRITICAL_SECTION)((int)this + 0x70);
+    (*pcVar7)(local_14);
+    if (iStack_28 == 0) {
+      DStack_24 = GetLastError();
+    }
+    else if (pvStack_1c == (void *)0x0) {
+      DVar1 = GetTickCount();
+      if (p_Stack_20 == (LPOVERLAPPED)0x0) {
+        FUN_73aa2faa((int)this);
+      }
+      else {
+        InterlockedDecrement((LONG *)((int)this + 0x38));
+        (*pcVar7)(&DAT_73aa78a0);
+        bVar8 = 0xfffffffe < _DAT_73aa7918;
+        _DAT_73aa7918 = _DAT_73aa7918 + 1;
+        _DAT_73aa791c = _DAT_73aa791c + (uint)bVar8;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        DStack_10 = DVar1;
+        (**(code **)(DVar1 + 0x18))(*(undefined4 *)(DVar1 + 0x1c));
+        FUN_73aa5951((int)piStack_c);
+      }
+      if (DAT_73aa7880 != 0) {
+        (*pcVar7)(&DAT_73aa78a0);
+        DVar4 = GetTickCount();
+        if (DVar4 < DVar1) {
+          uVar2 = (DVar4 - DVar1) - 1;
+        }
+        else {
+          uVar2 = DVar4 - DVar1;
+        }
+        bVar8 = CARRY4(_DAT_73aa7930,uVar2);
+        _DAT_73aa7930 = _DAT_73aa7930 + uVar2;
+        _DAT_73aa7934 = _DAT_73aa7934 + (uint)bVar8;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      }
+      goto LAB_73aa2908;
+    }
+    DVar1 = GetTickCount();
+    if (p_Stack_20 == (LPOVERLAPPED)0x0) {
+      if (DStack_24 != 0x102) {
+        FUN_73aa5f49(s_***_GetQueuedCompletionStatus_fa_73aa7168);
+      }
+    }
+    else {
+      uVar2 = p_Stack_20[1].Internal & 0x1110000;
+      if (uVar2 == 0x10000) {
+                    /* WARNING: Load size is inaccurate */
+        if (*this != 0) {
+          DStack_24 = 0x45b;
+        }
+        piStack_c = FUN_73aa42fd(pvStack_1c,
+                                 CONCAT22((short)((uint)p_Stack_20 >> 0x10),
+                                          *(undefined2 *)&p_Stack_20[1].Internal),DStack_24);
+        if ((piStack_c != (int *)0x0) && (iVar5 = FUN_73aa2ef9(this,(size_t)piStack_c), iVar5 ==  0))
+        {
+          FUN_73aa3af2(piStack_c);
+        }
+        if (DAT_73aa7880 != 0) {
+          (*pcVar7)(&DAT_73aa78a0);
+          DVar4 = GetTickCount();
+          if (DVar4 < DVar1) {
+            uVar2 = (DVar4 - DVar1) - 1;
+          }
+          else {
+            uVar2 = DVar4 - DVar1;
+          }
+          bVar8 = CARRY4(_DAT_73aa7938,uVar2);
+          _DAT_73aa7938 = _DAT_73aa7938 + uVar2;
+          _DAT_73aa793c = _DAT_73aa793c + (uint)bVar8;
+          goto LAB_73aa2cc8;
+        }
+      }
+      else if (uVar2 == 0x100000) {
+        FUN_73aa47dd(pvStack_1c,DStack_18,DStack_24);
+        if (DAT_73aa7880 != 0) {
+          (*pcVar7)(&DAT_73aa78a0);
+          DVar4 = GetTickCount();
+          if (DVar4 < DVar1) {
+            uVar2 = (DVar4 - DVar1) - 1;
+          }
+          else {
+            uVar2 = DVar4 - DVar1;
+          }
+          bVar8 = CARRY4(_DAT_73aa7940,uVar2);
+          _DAT_73aa7940 = _DAT_73aa7940 + uVar2;
+          _DAT_73aa7944 = _DAT_73aa7944 + (uint)bVar8;
+          goto LAB_73aa2cc8;
+        }
+      }
+      else if ((uVar2 == 0x1000000) &&
+              (FUN_73aa50d5(pvStack_1c,DStack_18,DStack_24), DAT_73aa7880 != 0)) {
+        (*pcVar7)(&DAT_73aa78a0);
+        DVar4 = GetTickCount();
+        if (DVar4 < DVar1) {
+          uVar2 = (DVar4 - DVar1) - 1;
+        }
+        else {
+          uVar2 = DVar4 - DVar1;
+        }
+        bVar8 = CARRY4(_DAT_73aa7948,uVar2);
+        _DAT_73aa7948 = _DAT_73aa7948 + uVar2;
+        _DAT_73aa794c = _DAT_73aa794c + (uint)bVar8;
+LAB_73aa2cc8:
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      }
+    }
+    DVar1 = GetTickCount();
+    *(DWORD *)((int)this + 0x3b0) = DVar1;
+    if (DVar1 < local_8) {
+      uVar2 = (DVar1 - local_8) - 1;
+    }
+    else {
+      uVar2 = DVar1 - local_8;
+    }
+    if ((*(uint *)((int)this + 0x10) < uVar2) || (DStack_24 == 0x102)) {
+      local_8 = DVar1;
+      FUN_73aa3521((int *)((int)this + 0x3b4),FUN_73aa30b8,uVar2);
+    }
+    DVar4 = GetTickCount();
+    if (DAT_73aa7880 != 0) {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DVar4 < DVar1) {
+        uVar2 = (DVar4 - DVar1) - 1;
+      }
+      else {
+        uVar2 = DVar4 - DVar1;
+      }
+      bVar8 = CARRY4(_DAT_73aa7950,uVar2);
+      _DAT_73aa7950 = _DAT_73aa7950 + uVar2;
+      _DAT_73aa7954 = _DAT_73aa7954 + (uint)bVar8;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    }
+    if (*(uint *)((int)this + 0x24) != 0xffffffff) {
+      if (DVar4 < local_4) {
+        uVar2 = (DVar4 - local_4) - 1;
+      }
+      else {
+        uVar2 = DVar4 - local_4;
+      }
+      if (*(uint *)((int)this + 0x24) >> 1 < uVar2) {
+        FUN_73aa3521((int *)((int)this + 0x3c),&LAB_73aa2fc9,0);
+        local_4 = DVar4;
+      }
+    }
+    DVar1 = GetTickCount();
+    if (DAT_73aa7880 != 0) {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DVar1 < DVar4) {
+        uVar2 = (DVar1 - DVar4) - 1;
+      }
+      else {
+        uVar2 = DVar1 - DVar4;
+      }
+      bVar8 = CARRY4(_DAT_73aa7958,uVar2);
+      _DAT_73aa7958 = _DAT_73aa7958 + uVar2;
+      _DAT_73aa795c = _DAT_73aa795c + (uint)bVar8;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    }
+    uVar2 = *(int *)((int)this + 0x38) - *(int *)((int)this + 0x34);
+    if (DAT_73aa70f8 < uVar2) {
+      DAT_73aa7100 = 1;
+    }
+    if ((DAT_73aa7100 != 0) && (uVar2 <= DAT_73aa7888)) {
+      DAT_73aa7100 = 0;
+      FUN_73aa5e59(DAT_73aa7894);
+      if (DAT_73aa788c != 0) {
+        FUN_73aa5e7f();
+      }
+      if (DAT_73aa7890 != 0) {
+        FUN_73aa5e7f();
+      }
+      dwMaximumWorkingSetSize = 0xffffffff;
+      dwMinimumWorkingSetSize = 0xffffffff;
+      hProcess = GetCurrentProcess();
+      SetProcessWorkingSetSize(hProcess,dwMinimumWorkingSetSize,dwMaximumWorkingSetSize);
+    }
+  } while( true );
+}
+
+
+#Kod citav koji se bavi da valjda po imenu stringa dobije status konekcije ili neceg.
+#Was closed because of coninfo timeout
+
+
+undefined4 FUN_73aa30b8(int *param_1,undefined4 param_2,uint param_3)
+
+{
+  int iVar1;
+  int iVar2;
+  LPCSTR lpString;
+  LPCWSTR lpString2;
+  undefined unaff_DI;
+  WCHAR local_20c [128];
+  WCHAR local_10c [128];
+  WCHAR *local_c;
+  WCHAR *local_8;
+  
+  if (param_1[0x13] == -1) {
+    iVar2 = param_1[0x20];
+    if (iVar2 != 0) {
+      iVar1 = param_1[1];
+      InterlockedExchange((LONG *)(iVar2 + 0xc),*(uint *)(iVar2 + 0xc) | 0x80000000);
+      InterlockedDecrement((LONG *)(iVar1 + 0x3e0));
+      param_1[0x20] = 0;
+      iVar2 = FUN_73aa26ff(param_1);
+    }
+  }
+  else {
+    iVar2 = FUN_73aa3b79(param_1,param_3);
+    if (iVar2 != 0) {
+      if ((param_1[0xc] & 0x100U) == 0) {
+        if ((param_1[0xc] & 8U) != 0) {
+          (**(code **)(*param_1 + 0x5c))(3);
+          iVar2 = param_1[0x14];
+          param_1[0x13] = iVar2;
+          goto LAB_73aa31c4;
+        }
+      }
+      else {
+        lpString2 = (LPCWSTR)0x0;
+        if (DAT_73aa7884 != 0) {
+          lpString = (LPCSTR)(**(code **)(*param_1 + 0x20))();
+          if (lpString != (LPCSTR)0x0) {
+            lpString2 = (LPCWSTR)&stack0xfffffde8;
+            iVar2 = lstrlenA(lpString);
+            FUN_73aa6210(unaff_DI);
+            MultiByteToWideChar(0,0,lpString,-1,(LPWSTR)&stack0xfffffde8,iVar2 + 1);
+          }
+          lstrcpyW(local_10c,lpString2);
+          lstrcpyW(local_20c,u_was_closed_because_of_a_coninfo_t_73aa7194);
+          local_c = local_10c;
+          local_8 = local_20c;
+          FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+        }
+      }
+      iVar2 = FUN_73aa3af2(param_1);
+    }
+  }
+LAB_73aa31c4:
+  return CONCAT31((int3)((uint)iVar2 >> 8),1);
+}
+
+
+#Davanje razloga/greske pri kojoj se iskazuje da je veza prekinuta zbog isteka vremena na coninfo.
+#Valjda ukoliko server nakon odredenog servera ne odgovori klijentu(onaj koji na WinXP pokrece igru).
+#Zone
+
+
+HWND FUN_73aa341d(void)
+
+{
+  HWND hDlg;
+  UINT UVar1;
+  int iVar2;
+  WCHAR local_44 [4];
+  undefined2 local_3c;
+  
+  hDlg = FindWindowW(u_#32770_73aa71f4,u_Sign_In_73aa7204);
+  if ((hDlg != (HWND)0x0) && (UVar1 = GetDlgItemTextW(hDlg,0x7a,local_44,0x40), UVar1 != 0)) {
+    local_3c = 0;
+    iVar2 = lstrcmpW(local_44,u_Zone_73aa71e8);
+    if (iVar2 == 0) {
+      return hDlg;
+    }
+  }
+  return (HWND)0x0;
+}
+
+
+#Nemam dodante ideologije/logistike sta li bi ovo trebalo da vrsi.
+#Sudeci po pomoci savetovanja od Rozniaka, moguce da je ovo ta ocekivana "ZoNe" poruka.
+#Ovo bi mogao biti deo za "Hi", "FirstMSG" i slicne poruke komunikacije izmedu servera i klijenta.
+#|#32770
+
+
+HWND FUN_73aa341d(void)
+
+{
+  HWND hDlg;
+  UINT UVar1;
+  int iVar2;
+  WCHAR local_44 [4];
+  undefined2 local_3c;
+  
+  hDlg = FindWindowW(u_#32770_73aa71f4,u_Sign_In_73aa7204);
+  if ((hDlg != (HWND)0x0) && (UVar1 = GetDlgItemTextW(hDlg,0x7a,local_44,0x40), UVar1 != 0)) {
+    local_3c = 0;
+    iVar2 = lstrcmpW(local_44,u_Zone_73aa71e8);
+    if (iVar2 == 0) {
+      return hDlg;
+    }
+  }
+  return (HWND)0x0;
+}
+
+
+#Do duse ovo bi mogao biti samo komad koda za konfirmaciju ili nesto.
+#Ovo je tako jer je ovaj kod "#32770" stringa isti kao onaj iz "Zone" stringa, mozda sa nekim malim izmenama.
+#Sign In
+
+
+HWND FUN_73aa341d(void)
+
+{
+  HWND hDlg;
+  UINT UVar1;
+  int iVar2;
+  WCHAR local_44 [4];
+  undefined2 local_3c;
+  
+  hDlg = FindWindowW(u_#32770_73aa71f4,u_Sign_In_73aa7204);
+  if ((hDlg != (HWND)0x0) && (UVar1 = GetDlgItemTextW(hDlg,0x7a,local_44,0x40), UVar1 != 0)) {
+    local_3c = 0;
+    iVar2 = lstrcmpW(local_44,u_Zone_73aa71e8);
+    if (iVar2 == 0) {
+      return hDlg;
+    }
+  }
+  return (HWND)0x0;
+}
+
+
+#Ovaj string se vodi kao prijava klijenta na server, mozda i pocetak tog samog handshake procesa, valjda.
+#Takode, skoro je isti kod kao iz "#32770" i "Zone", mozda sa nekim izmenama malim.
+#ConInfo::~ConInfo (m_readMessag_73aa7214)
+
+
+void __fastcall FUN_73aa38f5(wchar_t *param_1)
+
+{
+  int iVar1;
+  ushort uVar2;
+  wchar_t *local_8;
+  
+  *(undefined ***)param_1 = &PTR_FUN_73aa13f8;
+  local_8 = param_1;
+  if (*(int *)(param_1 + 0x88) != 0) {
+    local_8 = u_ConInfo::~ConInfo_-_m_readMessag_73aa7214;
+    FUN_73aa6325(0xe111000f,1,&local_8,0x160,param_1);
+    FUN_73aa5e11(DAT_73aa7894,*(int *)(param_1 + 0x88),*(uint *)(param_1 + 0x8c));
+    param_1[0x88] = L'\0';
+    param_1[0x89] = L'\0';
+  }
+  if (*(int *)(*(int *)(param_1 + 2) + 0x6c) == 0) {
+    CloseHandle(*(HANDLE *)(param_1 + 0x6c));
+    CloseHandle(*(HANDLE *)(param_1 + 0x9c));
+  }
+  memset(param_1 + 100,0,0x18);
+  memset(param_1 + 0x94,0,0x18);
+  iVar1 = *(int *)(param_1 + 0x58);
+  builtin_wcsncpy(param_1 + 0x14,L"\xffff\xffff\xffff\xffff",4);
+  param_1[0x3a] = L'\0';
+  param_1[0x3b] = L'\0';
+  param_1[0x3c] = L'\0';
+  param_1[0x3d] = L'\0';
+  param_1[0x1a] = L'\0';
+  param_1[0x1b] = L'\0';
+  param_1[0x1c] = L'\0';
+  param_1[0x1d] = L'\0';
+  if (iVar1 != 0) {
+    if (*(int *)(*(int *)(param_1 + 2) + 0x6c) == 0) {
+      uVar2 = 0;
+      if (*(short *)(iVar1 + 8) != 0) {
+        do {
+          CloseHandle(*(HANDLE *)((uint)uVar2 * 0x11c + 0x114 + *(int *)(iVar1 + 0xc)));
+          iVar1 = *(int *)(param_1 + 0x58);
+          uVar2 = uVar2 + 1;
+        } while (uVar2 < *(ushort *)(iVar1 + 8));
+      }
+    }
+    FUN_73aa5951(*(int *)(*(int *)(param_1 + 0x58) + 0xc));
+    FUN_73aa5951(*(int *)(param_1 + 0x58));
+    param_1[0x58] = L'\0';
+    param_1[0x59] = L'\0';
+  }
+  if ((*(byte *)(param_1 + 0x18) & 0x80) != 0) {
+    InterlockedDecrement(&DAT_73aa7990);
+  }
+  InterlockedDecrement((LONG *)(*(int *)(param_1 + 2) + 0x38));
+  DeleteCriticalSection((LPCRITICAL_SECTION)(param_1 + 4));
+  param_1[0x18] = L'\0';
+  param_1[0x19] = L'\0';
+  *(undefined *)((int)param_1 + 0x69) = 0;
+  *(undefined ***)param_1 = &PTR_FUN_73aa145c;
+  param_1[2] = L'\0';
+  param_1[3] = L'\0';
+  return;
+}
+
+
+#Ovaj kod se mozda bavi citanjem dobijene poruke i kako da je iskoristi.
+#Pri kraju ovog koda mozemo vidit kako se brise kritikalna sekcija.
+#CLSID?
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa3e17(void *param_1)
+
+{
+  int iVar1;
+  LSTATUS LVar2;
+  RPC_STATUS RVar3;
+  uint local_54 [2];
+  undefined2 local_4c;
+  undefined2 local_4a;
+  undefined4 local_48;
+  undefined4 local_44;
+  undefined4 local_40;
+  UUID local_34;
+  undefined4 local_24;
+  undefined4 uStack_20;
+  undefined2 uStack_1c;
+  DWORD local_18;
+  void *local_14;
+  DWORD local_10;
+  DWORD local_c;
+  HKEY local_8;
+  
+  local_14 = param_1;
+  iVar1 = FUN_73aa5085(param_1,2);
+  if (iVar1 != 0) {
+    memset(local_54,0,0x30);
+    local_54[0] = 0x4c694e6b;
+    local_54[1] = 0x30;
+    local_4c = 1;
+    local_4a = 0x30;
+    local_48 = 3;
+    local_40 = 0;
+    local_44 = *(undefined4 *)(*(int *)((int)param_1 + 4) + 0x2c);
+    local_24 = _DAT_73aa731c;
+    local_8 = (HKEY)0x0;
+    uStack_20 = DAT_73aa7320;
+    uStack_1c = DAT_73aa7324;
+    LVar2 = RegCreateKeyExW((HKEY)0x80000000,u_CLSID\{32b9f4be-3472-11d1-927d-0_73aa72c0,0,
+                            (LPWSTR)0x0,0,0x2001f,(LPSECURITY_ATTRIBUTES)0x0,&local_8,&local_18);
+    if ((LVar2 == 0) && (local_8 != (HKEY)0x0)) {
+      local_c = 0;
+      local_10 = 0x10;
+      LVar2 = RegQueryValueExW(local_8,(LPCWSTR)&local_24,(LPDWORD)0x0,&local_c,(LPBYTE)&local_34 ,
+                               &local_10);
+      if (((LVar2 != 0) || ((local_c != 3 || (local_10 != 0x10)))) &&
+         (RVar3 = UuidCreate(&local_34), -1 < RVar3)) {
+        RegSetValueExW(local_8,(LPCWSTR)&local_24,0,3,(BYTE *)&local_34,0x10);
+      }
+      RegCloseKey(local_8);
+    }
+    FUN_73aa58f8(local_54,0x30,0xf8273645);
+    iVar1 = FUN_73aa5449(local_14,(int)local_54,0x30);
+    if ((iVar1 != 0) && (iVar1 = FUN_73aa4740(local_14,4), iVar1 != 0)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+
+#cundan mi je ovaj kod. Moguce da je nesto u vezi za memoriju.
+#Jos jedan cin bi mogao biti po tome da se registruje neki kljuc(key)
+#was closed because ReadFile returned error %d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __thiscall FUN_73aa3f41(void *this,int param_1,LPCVOID param_2,DWORD param_3)
+
+{
+  DWORD DVar1;
+  BOOL BVar2;
+  LPCSTR pCVar3;
+  LPCWSTR pWVar4;
+  int iVar5;
+  LPOVERLAPPED lpOverlapped;
+  undefined unaff_DI;
+  bool bVar6;
+  HANDLE hEvent;
+  WCHAR local_210 [128];
+  WCHAR local_110 [128];
+  DWORD local_10;
+  WCHAR *local_c;
+  WCHAR *local_8;
+  
+  if (param_1 == 0x100000) {
+    *(undefined4 *)((int)this + 0xdc) = 0x80100000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)((int)this + 200) = 0;
+      *(undefined4 *)((int)this + 0xcc) = 0;
+      *(undefined4 *)((int)this + 0xd0) = 0;
+      *(undefined4 *)((int)this + 0xd4) = 0;
+      ResetEvent(*(HANDLE *)((int)this + 0xd8));
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)((int)this + 0xd8),this,(int)this + 2 00)
+      ;
+    }
+    else {
+      memset((void *)((int)this + 200),0,0x14);
+    }
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar6 = 0xfffffffe < _DAT_73aa78f0;
+    _DAT_73aa78f0 = _DAT_73aa78f0 + 1;
+    _DAT_73aa78f4 = _DAT_73aa78f4 + (uint)bVar6;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    BVar2 = ReadFile(*(HANDLE *)((int)this + 0x24),param_2,param_3,&local_10,
+                     (LPOVERLAPPED)((int)this + 200));
+    if (BVar2 != 0) {
+      return;
+    }
+    DVar1 = GetLastError();
+    if ((DVar1 != 8) && (DVar1 == 0x3e5)) {
+      return;
+    }
+    if ((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) {
+      *(undefined *)((int)this + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar6 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar6;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+        pWVar4 = (LPCWSTR)&stack0xfffffde4;
+        pCVar3 = (LPCSTR)(**(code **)(*this + 0x20))();
+        if (pCVar3 == (LPCSTR)0x0) {
+          pWVar4 = (LPCWSTR)0x0;
+        }
+        else {
+          iVar5 = lstrlenA(pCVar3);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,pCVar3,-1,(LPWSTR)&stack0xfffffde4,iVar5 + 1);
+        }
+        lstrcpyW(local_210,pWVar4);
+        wsprintfW(local_110,u_was_closed_because_ReadFile_retu_73aa7328,DVar1);
+        local_c = local_210;
+        local_8 = local_110;
+        FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+      }
+    }
+    iVar5 = *(int *)((int)this + 4);
+    if (*(int *)(iVar5 + 0x6c) == 0) {
+      *(byte *)((int)this + 0xdf) = *(byte *)((int)this + 0xdf) & 0x7f;
+      hEvent = *(HANDLE *)((int)this + 0xd8);
+      goto LAB_73aa42ea;
+    }
+    lpOverlapped = (LPOVERLAPPED)((int)this + 200);
+  }
+  else {
+    if (param_1 != 0x1000000) {
+      return;
+    }
+    *(undefined4 *)((int)this + 0x13c) = 0x81000000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)((int)this + 0x128) = 0;
+      *(undefined4 *)((int)this + 300) = 0;
+      *(undefined4 *)((int)this + 0x130) = 0;
+      *(undefined4 *)((int)this + 0x134) = 0;
+      ResetEvent(*(HANDLE *)((int)this + 0x138));
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)((int)this + 0x138),this,
+                   (int)this + 0x128);
+    }
+    else {
+      memset((void *)((int)this + 0x128),0,0x14);
+    }
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar6 = 0xfffffffe < _DAT_73aa7900;
+    _DAT_73aa7900 = _DAT_73aa7900 + 1;
+    _DAT_73aa7904 = _DAT_73aa7904 + (uint)bVar6;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    DVar1 = GetTickCount();
+    *(DWORD *)((int)this + 0x154) = DVar1;
+    if (DVar1 == 0) {
+      *(DWORD *)((int)this + 0x154) = 1;
+    }
+    BVar2 = WriteFile(*(HANDLE *)((int)this + 0x24),param_2,param_3,&local_10,
+                      (LPOVERLAPPED)((int)this + 0x128));
+    if (BVar2 != 0) {
+      return;
+    }
+    DVar1 = GetLastError();
+    if ((DVar1 != 8) && (DVar1 == 0x3e5)) {
+      return;
+    }
+    if ((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) {
+      *(undefined *)((int)this + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar6 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar6;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+        pWVar4 = (LPCWSTR)&stack0xfffffde4;
+        pCVar3 = (LPCSTR)(**(code **)(*this + 0x20))();
+        if (pCVar3 == (LPCSTR)0x0) {
+          pWVar4 = (LPCWSTR)0x0;
+        }
+        else {
+          iVar5 = lstrlenA(pCVar3);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,pCVar3,-1,(LPWSTR)&stack0xfffffde4,iVar5 + 1);
+        }
+        lstrcpyW(local_110,pWVar4);
+        wsprintfW(local_210,u_was_closed_because_WriteFile_ret_73aa7388,DVar1);
+        local_c = local_110;
+        local_8 = local_210;
+        FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+      }
+    }
+    iVar5 = *(int *)((int)this + 4);
+    if (*(int *)(iVar5 + 0x6c) == 0) {
+      *(byte *)((int)this + 0x13f) = *(byte *)((int)this + 0x13f) & 0x7f;
+      hEvent = *(HANDLE *)((int)this + 0x138);
+LAB_73aa42ea:
+      SetEvent(hEvent);
+      return;
+    }
+    lpOverlapped = (LPOVERLAPPED)((int)this + 0x128);
+  }
+  PostQueuedCompletionStatus(*(HANDLE *)(iVar5 + 4),0,(ULONG_PTR)this,lpOverlapped);
+  return;
+}
+
+
+#Sudeci po stringu, moguce da je kod za citanje podataka.
+#Najvise je baziran da prekine konekciju ili izbaci gresku ukoliko dode do problema pri citanju podatka.
+#was closed because WriteFile returned error %d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __thiscall FUN_73aa3f41(void *this,int param_1,LPCVOID param_2,DWORD param_3)
+
+{
+  DWORD DVar1;
+  BOOL BVar2;
+  LPCSTR pCVar3;
+  LPCWSTR pWVar4;
+  int iVar5;
+  LPOVERLAPPED lpOverlapped;
+  undefined unaff_DI;
+  bool bVar6;
+  HANDLE hEvent;
+  WCHAR local_210 [128];
+  WCHAR local_110 [128];
+  DWORD local_10;
+  WCHAR *local_c;
+  WCHAR *local_8;
+  
+  if (param_1 == 0x100000) {
+    *(undefined4 *)((int)this + 0xdc) = 0x80100000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)((int)this + 200) = 0;
+      *(undefined4 *)((int)this + 0xcc) = 0;
+      *(undefined4 *)((int)this + 0xd0) = 0;
+      *(undefined4 *)((int)this + 0xd4) = 0;
+      ResetEvent(*(HANDLE *)((int)this + 0xd8));
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)((int)this + 0xd8),this,(int)this + 2 00)
+      ;
+    }
+    else {
+      memset((void *)((int)this + 200),0,0x14);
+    }
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar6 = 0xfffffffe < _DAT_73aa78f0;
+    _DAT_73aa78f0 = _DAT_73aa78f0 + 1;
+    _DAT_73aa78f4 = _DAT_73aa78f4 + (uint)bVar6;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    BVar2 = ReadFile(*(HANDLE *)((int)this + 0x24),param_2,param_3,&local_10,
+                     (LPOVERLAPPED)((int)this + 200));
+    if (BVar2 != 0) {
+      return;
+    }
+    DVar1 = GetLastError();
+    if ((DVar1 != 8) && (DVar1 == 0x3e5)) {
+      return;
+    }
+    if ((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) {
+      *(undefined *)((int)this + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar6 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar6;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+        pWVar4 = (LPCWSTR)&stack0xfffffde4;
+        pCVar3 = (LPCSTR)(**(code **)(*this + 0x20))();
+        if (pCVar3 == (LPCSTR)0x0) {
+          pWVar4 = (LPCWSTR)0x0;
+        }
+        else {
+          iVar5 = lstrlenA(pCVar3);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,pCVar3,-1,(LPWSTR)&stack0xfffffde4,iVar5 + 1);
+        }
+        lstrcpyW(local_210,pWVar4);
+        wsprintfW(local_110,u_was_closed_because_ReadFile_retu_73aa7328,DVar1);
+        local_c = local_210;
+        local_8 = local_110;
+        FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+      }
+    }
+    iVar5 = *(int *)((int)this + 4);
+    if (*(int *)(iVar5 + 0x6c) == 0) {
+      *(byte *)((int)this + 0xdf) = *(byte *)((int)this + 0xdf) & 0x7f;
+      hEvent = *(HANDLE *)((int)this + 0xd8);
+      goto LAB_73aa42ea;
+    }
+    lpOverlapped = (LPOVERLAPPED)((int)this + 200);
+  }
+  else {
+    if (param_1 != 0x1000000) {
+      return;
+    }
+    *(undefined4 *)((int)this + 0x13c) = 0x81000000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)((int)this + 0x128) = 0;
+      *(undefined4 *)((int)this + 300) = 0;
+      *(undefined4 *)((int)this + 0x130) = 0;
+      *(undefined4 *)((int)this + 0x134) = 0;
+      ResetEvent(*(HANDLE *)((int)this + 0x138));
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)((int)this + 0x138),this,
+                   (int)this + 0x128);
+    }
+    else {
+      memset((void *)((int)this + 0x128),0,0x14);
+    }
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar6 = 0xfffffffe < _DAT_73aa7900;
+    _DAT_73aa7900 = _DAT_73aa7900 + 1;
+    _DAT_73aa7904 = _DAT_73aa7904 + (uint)bVar6;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    DVar1 = GetTickCount();
+    *(DWORD *)((int)this + 0x154) = DVar1;
+    if (DVar1 == 0) {
+      *(DWORD *)((int)this + 0x154) = 1;
+    }
+    BVar2 = WriteFile(*(HANDLE *)((int)this + 0x24),param_2,param_3,&local_10,
+                      (LPOVERLAPPED)((int)this + 0x128));
+    if (BVar2 != 0) {
+      return;
+    }
+    DVar1 = GetLastError();
+    if ((DVar1 != 8) && (DVar1 == 0x3e5)) {
+      return;
+    }
+    if ((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) {
+      *(undefined *)((int)this + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar6 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar6;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+        pWVar4 = (LPCWSTR)&stack0xfffffde4;
+        pCVar3 = (LPCSTR)(**(code **)(*this + 0x20))();
+        if (pCVar3 == (LPCSTR)0x0) {
+          pWVar4 = (LPCWSTR)0x0;
+        }
+        else {
+          iVar5 = lstrlenA(pCVar3);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,pCVar3,-1,(LPWSTR)&stack0xfffffde4,iVar5 + 1);
+        }
+        lstrcpyW(local_110,pWVar4);
+        wsprintfW(local_210,u_was_closed_because_WriteFile_ret_73aa7388,DVar1);
+        local_c = local_110;
+        local_8 = local_210;
+        FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+      }
+    }
+    iVar5 = *(int *)((int)this + 4);
+    if (*(int *)(iVar5 + 0x6c) == 0) {
+      *(byte *)((int)this + 0x13f) = *(byte *)((int)this + 0x13f) & 0x7f;
+      hEvent = *(HANDLE *)((int)this + 0x138);
+LAB_73aa42ea:
+      SetEvent(hEvent);
+      return;
+    }
+    lpOverlapped = (LPOVERLAPPED)((int)this + 0x128);
+  }
+  PostQueuedCompletionStatus(*(HANDLE *)(iVar5 + 4),0,(ULONG_PTR)this,lpOverlapped);
+  return;
+}
+
+
+#Mozda isto kao prethodni, mozda sa nesto malih izmena.
+#Takode kod za moguc prekid mreze ili pokazivanje greske u ovom slucaju za pisanje podatka.
+#ConInfo::Accept: ERROR - %d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int * __thiscall FUN_73aa42fd(void *this,uint param_1,int param_2)
+
+{
+  undefined uVar1;
+  SOCKET s;
+  undefined3 extraout_var;
+  HANDLE pvVar2;
+  DWORD DVar3;
+  int iVar4;
+  int iVar5;
+  int *piVar6;
+  bool bVar7;
+  undefined local_1c [4];
+  undefined local_18 [4];
+  int local_14;
+  int local_10;
+  _FILETIME local_c;
+  
+  if ((*(byte *)((int)this + 0x30) & 0x40) == 0) {
+    return (int *)0x0;
+  }
+  if (param_2 == 0) {
+    iVar5 = (param_1 & 0xffff) * 0x11c;
+    if ((*(int *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) != -1) &&
+       (DAT_73aa7990 < *(uint *)(*(int *)((int)this + 0xb0) + 4))) {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar7 = 0xfffffffe < _DAT_73aa78d8;
+      _DAT_73aa78d8 = _DAT_73aa78d8 + 1;
+      _DAT_73aa78dc = _DAT_73aa78dc + (uint)bVar7;
+      bVar7 = 0xfffffffe < _DAT_73aa78c8;
+      _DAT_73aa78c8 = _DAT_73aa78c8 + 1;
+      _DAT_73aa78cc = _DAT_73aa78cc + (uint)bVar7;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      local_c.dwHighDateTime = 0;
+      bVar7 = FUN_73aa33cb(*(void **)((int)this + 4),
+                           *(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5));
+      if (CONCAT31(extraout_var,bVar7) == 0) {
+LAB_73aa448e:
+        GetLastError();
+        FUN_73aa5f49(s_ConInfo::Accept:_ERROR_-_%d._73aa73e8);
+        EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        bVar7 = 0xfffffffe < _DAT_73aa78d0;
+        _DAT_73aa78d0 = _DAT_73aa78d0 + 1;
+        _DAT_73aa78d4 = _DAT_73aa78d4 + (uint)bVar7;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        closesocket(*(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5));
+        *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = 0xffffffff;
+      }
+      else {
+        (*DAT_73aa79a8)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 4 + iVar5,0,0x80,0x80,&local_ 14
+                        ,local_1c,&local_10,local_18);
+        uVar1 = *(undefined *)(local_14 + 4);
+        *(undefined *)(local_14 + 4) = *(undefined *)(local_14 + 7);
+        *(undefined *)(local_14 + 7) = uVar1;
+        uVar1 = *(undefined *)(local_14 + 5);
+        *(undefined *)(local_14 + 5) = *(undefined *)(local_14 + 6);
+        *(undefined *)(local_14 + 6) = uVar1;
+        uVar1 = *(undefined *)(local_10 + 4);
+        *(undefined *)(local_10 + 4) = *(undefined *)(local_10 + 7);
+        *(undefined *)(local_10 + 7) = uVar1;
+        uVar1 = *(undefined *)(local_10 + 5);
+        *(undefined *)(local_10 + 5) = *(undefined *)(local_10 + 6);
+        *(undefined *)(local_10 + 6) = uVar1;
+                    /* WARNING: Load size is inaccurate */
+        local_c.dwHighDateTime =
+             (**(code **)(*this + 0x60))
+                       (*(undefined4 *)((int)this + 4),
+                        *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5),
+                        *(undefined4 *)(local_14 + 4),*(undefined4 *)(local_10 + 4),0x30,
+                        *(undefined4 *)((int)this + 0x74),*(undefined4 *)((int)this + 0x34),
+                        *(undefined4 *)((int)this + 0x38));
+        if ((int *)local_c.dwHighDateTime == (int *)0x0) goto LAB_73aa448e;
+        if ((*(int *)(*(int *)((int)this + 4) + 0x6c) != 0) &&
+           (pvVar2 = CreateIoCompletionPort
+                               (*(HANDLE *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5),
+                                *(HANDLE *)(*(int *)((int)this + 4) + 4),local_c.dwHighDateTime,0) ,
+           pvVar2 == (HANDLE)0x0)) {
+          FUN_73aa3af2((int *)local_c.dwHighDateTime);
+LAB_73aa448a:
+          local_c.dwHighDateTime = 0;
+          goto LAB_73aa448e;
+        }
+        DVar3 = GetTickCount();
+        *(DWORD *)(local_c.dwHighDateTime + 0xb4) = DVar3;
+        *(int *)(local_c.dwHighDateTime + 0x50) = 10000;
+        *(int *)(local_c.dwHighDateTime + 0x4c) = 10000;
+        iVar4 = FUN_73aa4740((void *)local_c.dwHighDateTime,1);
+        if (iVar4 == 0) goto LAB_73aa448a;
+      }
+      FUN_73aa4598(this,param_1);
+      piVar6 = (int *)local_c.dwHighDateTime;
+      goto LAB_73aa4586;
+    }
+  }
+  iVar5 = (param_1 & 0xffff) * 0x11c;
+  s = *(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5);
+  if (s != 0xffffffff) {
+    closesocket(s);
+    *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = 0xffffffff;
+  }
+  if (param_2 != 0x45b) {
+    if (param_2 != 0) {
+      GetSystemTimeAsFileTime(&local_c);
+      if ((local_c.dwHighDateTime - *(int *)((int)this + 0xbc) !=
+           (uint)(local_c.dwLowDateTime < *(uint *)((int)this + 0xb8))) ||
+         (1800000000 < local_c.dwLowDateTime - *(uint *)((int)this + 0xb8))) {
+        *(DWORD *)((int)this + 0xb8) = local_c.dwLowDateTime;
+        *(DWORD *)((int)this + 0xbc) = local_c.dwHighDateTime;
+        FUN_73aa6325(0xe111002f,0,(LPCWSTR *)0x0,4,&param_2);
+      }
+    }
+    FUN_73aa4598(this,param_1);
+  }
+  piVar6 = (int *)0x0;
+LAB_73aa4586:
+  FUN_73aa26ff((undefined4 *)this);
+  return piVar6;
+}
+
+
+#Moguc kod koji prihvata sta god je poslato u vezi ConInfo.
+#Ovaj kod ima uslov sta daradi u uspesnom prihvacanju, a sta u neuspenom i desavanje greske.
+#AcceptEx error %d - no long accepting new connections
+
+
+undefined4 * __thiscall FUN_73aa4598(void *this,DWORD param_1)
+
+{
+  SOCKET SVar1;
+  int *piVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  int iVar5;
+  void *local_c;
+  undefined4 *local_8;
+  
+  iVar5 = (param_1 & 0xffff) * 0x11c;
+  local_c = this;
+  local_8 = (undefined4 *)this;
+  SVar1 = socket(2,1,0);
+  *(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = SVar1;
+  piVar2 = (int *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5);
+  if (*piVar2 == -1) {
+    param_1 = WSAGetLastError();
+    FUN_73aa6325(0xe1110006,0,(LPCWSTR *)0x0,4,&param_1);
+    FUN_73aa5f49(s_Unabled_to_allocate_socket_for_a_73aa7440);
+    local_8 = (undefined4 *)0x0;
+  }
+  else {
+    piVar2[0x46] = -0x7fff0000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x104 + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x108 + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x10c + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x110 + iVar5) = 0;
+      ResetEvent(*(HANDLE *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x114 + iVar5));
+      iVar3 = *(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5;
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)(iVar3 + 0x114),this,iVar3 + 0x104);
+    }
+    else {
+      memset((void *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x104 + iVar5),0,0x14);
+    }
+    puVar4 = (undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5);
+    local_8 = (undefined4 *)
+              (*DAT_73aa79ac)(*(undefined4 *)((int)this + 0x24),*puVar4,puVar4 + 1,0,0x80,0x80,
+                              &local_c,puVar4 + 0x41);
+    if ((local_8 == (undefined4 *)0x0) && (param_1 = GetLastError(), param_1 != 0x3e5)) {
+      FUN_73aa6325(0xe1110006,0,(LPCWSTR *)0x0,4,&param_1);
+      FUN_73aa5f49(s_AcceptEx_error_%d_-_no_long_acce_73aa7408);
+      closesocket(*(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5));
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = 0xffffffff;
+      FUN_73aa26ff((undefined4 *)this);
+    }
+  }
+  return local_8;
+}
+
+
+#Ovaj kod, sudeci po stringu, je mozda onaj koji nakon uspesnog povezivanja zaustavlja naredne pokusaje.
+#Ili ako je error neki, mozda i stvara problem u serveru gde pri greski neda vise da dolaze nove veze. Ne znam...
+#Unabled to allocate socket for accept - no new connection will be accepted
+
+
+undefined4 * __thiscall FUN_73aa4598(void *this,DWORD param_1)
+
+{
+  SOCKET SVar1;
+  int *piVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  int iVar5;
+  void *local_c;
+  undefined4 *local_8;
+  
+  iVar5 = (param_1 & 0xffff) * 0x11c;
+  local_c = this;
+  local_8 = (undefined4 *)this;
+  SVar1 = socket(2,1,0);
+  *(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = SVar1;
+  piVar2 = (int *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5);
+  if (*piVar2 == -1) {
+    param_1 = WSAGetLastError();
+    FUN_73aa6325(0xe1110006,0,(LPCWSTR *)0x0,4,&param_1);
+    FUN_73aa5f49(s_Unabled_to_allocate_socket_for_a_73aa7440);
+    local_8 = (undefined4 *)0x0;
+  }
+  else {
+    piVar2[0x46] = -0x7fff0000;
+    if (*(int *)(*(int *)((int)this + 4) + 0x6c) == 0) {
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x104 + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x108 + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x10c + iVar5) = 0;
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x110 + iVar5) = 0;
+      ResetEvent(*(HANDLE *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x114 + iVar5));
+      iVar3 = *(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5;
+      FUN_73aa284e(*(void **)((int)this + 4),*(undefined4 *)(iVar3 + 0x114),this,iVar3 + 0x104);
+    }
+    else {
+      memset((void *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + 0x104 + iVar5),0,0x14);
+    }
+    puVar4 = (undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5);
+    local_8 = (undefined4 *)
+              (*DAT_73aa79ac)(*(undefined4 *)((int)this + 0x24),*puVar4,puVar4 + 1,0,0x80,0x80,
+                              &local_c,puVar4 + 0x41);
+    if ((local_8 == (undefined4 *)0x0) && (param_1 = GetLastError(), param_1 != 0x3e5)) {
+      FUN_73aa6325(0xe1110006,0,(LPCWSTR *)0x0,4,&param_1);
+      FUN_73aa5f49(s_AcceptEx_error_%d_-_no_long_acce_73aa7408);
+      closesocket(*(SOCKET *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5));
+      *(undefined4 *)(*(int *)(*(int *)((int)this + 0xb0) + 0xc) + iVar5) = 0xffffffff;
+      FUN_73aa26ff((undefined4 *)this);
+    }
+  }
+  return local_8;
+}
+
+
+#koristi isti ili slicni kod kao prethodni kod/string.
+#mozda znaci da je neki problem ili uslov gde ukoliko se za igru od 2 igraca pokusa povezati 3 da ga igra odbije.
+#Ima dosta tih uslova ili nacina kako je sta moglo da radim pa nisam siguran.
+#ConInfo::ReadSetState - Invalid state
+
+
+undefined4 __thiscall FUN_73aa4740(void *this,int param_1)
+
+{
+  LPCVOID pvVar1;
+  uint uVar2;
+  
+  *(int *)((int)this + 0xc0) = param_1;
+  if (param_1 == 1) {
+    uVar2 = 0x30;
+  }
+  else if (param_1 == 2) {
+    uVar2 = 0x14;
+  }
+  else {
+    if (param_1 == 3) {
+      uVar2 = *(int *)((int)this + 0xe4) - (uint)*(ushort *)((int)this + 0xea);
+      pvVar1 = (LPCVOID)0x0;
+      goto LAB_73aa478a;
+    }
+    if (param_1 != 4) {
+      FUN_73aa5f49(s_******ConInfo::ReadSetState_-_In_73aa7490);
+      return 0;
+    }
+    uVar2 = 0x28;
+  }
+  pvVar1 = (LPCVOID)((int)this + 0xe0);
+LAB_73aa478a:
+  FUN_73aa4795(this,pvVar1,uVar2);
+  return 1;
+}
+
+
+#Neki kod koji sudeci po stringu mozda vodi namesteno stanje citanja.
+#Takode ima uslov u kom je stanje ne vazece.
+#was closed because a read completed with error %d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __thiscall FUN_73aa47dd(void *this,uint param_1,int param_2)
+
+{
+  uint uVar1;
+  DWORD DVar2;
+  int iVar3;
+  LPCSTR lpString;
+  LPCWSTR lpString2;
+  undefined unaff_DI;
+  bool bVar4;
+  WCHAR local_20c [128];
+  WCHAR local_10c [128];
+  WCHAR *local_c;
+  WCHAR *local_8;
+  
+  if ((*(byte *)((int)this + 0x30) & 0x10) != 0) {
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar4 = 0xfffffffe < _DAT_73aa78f8;
+    _DAT_73aa78f8 = _DAT_73aa78f8 + 1;
+    _DAT_73aa78fc = _DAT_73aa78fc + (uint)bVar4;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    if (((((*(uint *)((int)this + 0x30) & 0x100) == 0) && (param_1 != 0)) && (param_2 == 0)) &&
+       (*(int *)((int)this + 0x24) != -1)) {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar4 = CARRY4(_DAT_73aa78c0,param_1);
+      _DAT_73aa78c0 = _DAT_73aa78c0 + param_1;
+      _DAT_73aa78c4 = _DAT_73aa78c4 + ((int)param_1 >> 0x1f) + (uint)bVar4;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      *(int *)((int)this + 0x11c) = *(int *)((int)this + 0x11c) + param_1;
+      iVar3 = *(int *)((int)this + 0x11c);
+      if (iVar3 < *(int *)((int)this + 0x118)) {
+        FUN_73aa3f41(this,0x100000,(LPCVOID)(*(int *)((int)this + 0x114) + iVar3),
+                     *(int *)((int)this + 0x118) - iVar3);
+      }
+      else {
+        iVar3 = *(int *)((int)this + 0xc0);
+        if (iVar3 == 1) {
+          FUN_73aa4aa8((int *)this);
+        }
+        else if (iVar3 == 2) {
+          if (*(int *)((int)this + 0x5c) == -1) {
+            uVar1 = *(uint *)((int)this + 0x60);
+            DVar2 = GetTickCount();
+            if (DVar2 < uVar1) {
+              iVar3 = (DVar2 - uVar1) + -1;
+            }
+            else {
+              iVar3 = DVar2 - uVar1;
+            }
+            *(int *)((int)this + 0x5c) = iVar3;
+          }
+          FUN_73aa4b3d((int *)this);
+        }
+        else if (iVar3 == 3) {
+          FUN_73aa4ce2((int *)this);
+        }
+        else if (iVar3 == 4) {
+          FUN_73aa4f84((int *)this);
+        }
+      }
+    }
+    else {
+      if (*(int *)((int)this + 0x110) != 0) {
+        FUN_73aa5e11(DAT_73aa7894,*(int *)((int)this + 0x110),*(uint *)((int)this + 0x118));
+        *(undefined4 *)((int)this + 0x110) = 0;
+      }
+      *(undefined4 *)((int)this + 0x114) = 0;
+      *(undefined4 *)((int)this + 0x118) = 0;
+      *(undefined4 *)((int)this + 0x11c) = 0;
+      if ((*(byte *)((int)this + 0x31) & 1) == 0) {
+        if (((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) &&
+           ((param_2 != 0 && (param_2 != 0x40)))) {
+          *(undefined *)((int)this + 0x69) = 1;
+          EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+          bVar4 = 0xfffffffe < _DAT_73aa78e8;
+          _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+          _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar4;
+          LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+          if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+            lpString = (LPCSTR)(**(code **)(*this + 0x20))();
+            lpString2 = (LPCWSTR)0x0;
+            if (lpString != (LPCSTR)0x0) {
+              iVar3 = lstrlenA(lpString);
+              FUN_73aa6210(unaff_DI);
+              MultiByteToWideChar(0,0,lpString,-1,(LPWSTR)&stack0xfffffde8,iVar3 + 1);
+              lpString2 = (LPCWSTR)&stack0xfffffde8;
+            }
+            lstrcpyW(local_10c,lpString2);
+            wsprintfW(local_20c,u_was_closed_because_a_read_comple_73aa74c4,param_2);
+            local_c = local_10c;
+            local_8 = local_20c;
+            FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+          }
+        }
+        FUN_73aa3af2((int *)this);
+      }
+    }
+    FUN_73aa26ff((undefined4 *)this);
+  }
+  return;
+}
+
+
+#mozda kod koji zatvara socket/vezu klijenta sa serverom jer se deo citanja zavrsio sa greskom.
+#Sto bi moglo znaciti da u slucaju neke greske pri povezivanja na server i citanja poruke dode problem.
+#was closed because an invalid ZConnInternalGenericMsg. The data is the header.
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa4b3d(int *param_1)
+
+{
+  DWORD DVar1;
+  undefined4 uVar2;
+  LPCWSTR lpString2;
+  undefined unaff_DI;
+  bool bVar3;
+  int iVar4;
+  WCHAR local_210 [128];
+  WCHAR local_110 [128];
+  WCHAR *local_10;
+  WCHAR *local_c;
+  LPCSTR local_8;
+  
+  if (param_1[0x15] != 0) {
+    FUN_73aa58f8((uint *)(param_1 + 0x38),0x14,param_1[0x15]);
+  }
+  if ((((param_1[0x38] == 0x4c694e6b) && (param_1[0x31] == param_1[0x3b])) &&
+      (*(short *)((int)param_1 + 0xea) == 0x14)) &&
+     ((0x13 < (uint)param_1[0x39] && ((uint)param_1[0x39] <= *(uint *)(param_1[1] + 0x20))))) {
+    param_1[0x45] = 0;
+    param_1[0x31] = param_1[0x31] + 1;
+    param_1[0x46] = 0;
+    param_1[0x47] = 0;
+    if (param_1[0x39] - (uint)*(ushort *)((int)param_1 + 0xea) < 0x10) {
+      iVar4 = 2;
+    }
+    else {
+      DVar1 = GetTickCount();
+      param_1[0x19] = DVar1;
+      if (DVar1 == 0) {
+        param_1[0x19] = 1;
+      }
+      iVar4 = 3;
+    }
+    uVar2 = FUN_73aa4740(param_1,iVar4);
+  }
+  else {
+    FUN_73aa5f49(s_******ConInfoRead_-_bad_packet._73aa75cc);
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar3 = 0xfffffffe < _DAT_73aa78e0;
+    _DAT_73aa78e0 = _DAT_73aa78e0 + 1;
+    _DAT_73aa78e4 = _DAT_73aa78e4 + (uint)bVar3;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    if ((param_1[9] != -1) && (*(char *)((int)param_1 + 0x69) == '\0')) {
+      *(undefined *)((int)param_1 + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar3 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar3;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+        local_8 = (LPCSTR)(**(code **)(*param_1 + 0x20))();
+        lpString2 = (LPCWSTR)0x0;
+        if (local_8 != (LPCSTR)0x0) {
+          iVar4 = lstrlenA(local_8);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,local_8,-1,(LPWSTR)&stack0xfffffde4,iVar4 + 1);
+          lpString2 = (LPCWSTR)&stack0xfffffde4;
+        }
+        lstrcpyW(local_110,lpString2);
+        wsprintfW(local_210,u_was_closed_because_an_invalid_ZC_73aa752c);
+        local_10 = local_110;
+        local_c = local_210;
+        FUN_73aa6325(0x61110013,2,&local_10,0x14,param_1 + 0x38);
+      }
+    }
+    FUN_73aa3af2(param_1);
+    uVar2 = 0;
+  }
+  return uVar2;
+}
+
+
+#Ponovo, sudeci po ovom stringu. Veza se prekida jer je nevazeci ZConnInternalGenericMsg.
+#Mozda je ovo ko neka osnovna poruka komunikacije sa serverom. 
+#Razlog da je nevazece jer su datoteke header. Ne znam sta bi moglo znaciti ali cu suditi kao neke vise/glavne.
+#ConInfoRead - bad packet
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa4b3d(int *param_1)
+
+{
+  DWORD DVar1;
+  undefined4 uVar2;
+  LPCWSTR lpString2;
+  undefined unaff_DI;
+  bool bVar3;
+  int iVar4;
+  WCHAR local_210 [128];
+  WCHAR local_110 [128];
+  WCHAR *local_10;
+  WCHAR *local_c;
+  LPCSTR local_8;
+  
+  if (param_1[0x15] != 0) {
+    FUN_73aa58f8((uint *)(param_1 + 0x38),0x14,param_1[0x15]);
+  }
+  if ((((param_1[0x38] == 0x4c694e6b) && (param_1[0x31] == param_1[0x3b])) &&
+      (*(short *)((int)param_1 + 0xea) == 0x14)) &&
+     ((0x13 < (uint)param_1[0x39] && ((uint)param_1[0x39] <= *(uint *)(param_1[1] + 0x20))))) {
+    param_1[0x45] = 0;
+    param_1[0x31] = param_1[0x31] + 1;
+    param_1[0x46] = 0;
+    param_1[0x47] = 0;
+    if (param_1[0x39] - (uint)*(ushort *)((int)param_1 + 0xea) < 0x10) {
+      iVar4 = 2;
+    }
+    else {
+      DVar1 = GetTickCount();
+      param_1[0x19] = DVar1;
+      if (DVar1 == 0) {
+        param_1[0x19] = 1;
+      }
+      iVar4 = 3;
+    }
+    uVar2 = FUN_73aa4740(param_1,iVar4);
+  }
+  else {
+    FUN_73aa5f49(s_******ConInfoRead_-_bad_packet._73aa75cc);
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar3 = 0xfffffffe < _DAT_73aa78e0;
+    _DAT_73aa78e0 = _DAT_73aa78e0 + 1;
+    _DAT_73aa78e4 = _DAT_73aa78e4 + (uint)bVar3;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    if ((param_1[9] != -1) && (*(char *)((int)param_1 + 0x69) == '\0')) {
+      *(undefined *)((int)param_1 + 0x69) = 1;
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar3 = 0xfffffffe < _DAT_73aa78e8;
+      _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+      _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar3;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if (DAT_73aa7884 != 0) {
+        local_8 = (LPCSTR)(**(code **)(*param_1 + 0x20))();
+        lpString2 = (LPCWSTR)0x0;
+        if (local_8 != (LPCSTR)0x0) {
+          iVar4 = lstrlenA(local_8);
+          FUN_73aa6210(unaff_DI);
+          MultiByteToWideChar(0,0,local_8,-1,(LPWSTR)&stack0xfffffde4,iVar4 + 1);
+          lpString2 = (LPCWSTR)&stack0xfffffde4;
+        }
+        lstrcpyW(local_110,lpString2);
+        wsprintfW(local_210,u_was_closed_because_an_invalid_ZC_73aa752c);
+        local_10 = local_110;
+        local_c = local_210;
+        FUN_73aa6325(0x61110013,2,&local_10,0x14,param_1 + 0x38);
+      }
+    }
+    FUN_73aa3af2(param_1);
+    uVar2 = 0;
+  }
+  return uVar2;
+}
+
+
+#koristi se isti/slicni kod kao prethodni string.
+#Ovde se gleda da paket ili te poruke koje vrse handshake/komunikaciju su lose i pri tome se dovodi greska za citanje.
+#was closed because and invalid checksum (%d!=%d)
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa4ce2(int *param_1)
+
+{
+  int *piVar1;
+  uint uVar2;
+  undefined uVar3;
+  int iVar4;
+  LPCWSTR lpString2;
+  undefined4 *puVar5;
+  uint uVar6;
+  undefined4 uVar7;
+  undefined unaff_DI;
+  bool bVar8;
+  WCHAR local_228 [128];
+  WCHAR local_128 [128];
+  int local_28;
+  int local_24;
+  WCHAR *local_20;
+  WCHAR *local_1c;
+  int local_18;
+  LPCWSTR local_14;
+  LPCSTR local_10;
+  uint local_c;
+  undefined4 local_8;
+  
+  local_10 = (LPCSTR)0x0;
+  piVar1 = param_1 + 0x44;
+  local_c = (param_1[0x39] - (uint)*(ushort *)((int)param_1 + 0xea)) - 4;
+  if (*(int *)(*piVar1 + local_c) == 1) {
+    if (param_1[0x15] != 0) {
+      FUN_73aa58f8((uint *)*piVar1,local_c,param_1[0x15]);
+    }
+    local_8 = FUN_73aa5887(1,piVar1,(int)&local_c);
+    if (local_8 == param_1[0x3c]) {
+      local_14 = (LPCWSTR)*piVar1;
+      while ((0xf < local_c && (iVar4 = *piVar1, *(int *)(iVar4 + 0xc) + 0x10U <= local_c))) {
+        puVar5 = FUN_73aa3c81(param_1,&local_18,&local_1c,&local_28,&local_24);
+        if (local_28 == 0x7a737973) {
+          if (local_24 == 0) {
+            if (local_18 == -0x7fffffff) {
+              *(undefined *)(param_1 + 0x1a) = 1;
+            }
+            else if ((local_18 == -0x7ffffffe) && (local_1c == (WCHAR *)0x4)) {
+              uVar7 = *puVar5;
+              local_8._3_1_ = (undefined)((uint)uVar7 >> 0x18);
+              local_8._2_1_ = (undefined)((uint)uVar7 >> 0x10);
+              local_8._1_1_ = (undefined)((uint)uVar7 >> 8);
+              uVar3 = local_8._1_1_;
+              local_8._0_2_ = CONCAT11(local_8._2_1_,local_8._3_1_);
+              uVar2 = param_1[0x18];
+              local_8 = CONCAT13((char)uVar7,CONCAT12(uVar3,(undefined2)local_8));
+              uVar6 = param_1[0x19];
+              if (uVar6 < uVar2) {
+                uVar6 = (uVar6 - uVar2) - 1;
+              }
+              else {
+                uVar6 = uVar6 - uVar2;
+              }
+              if (local_8 <= uVar6) {
+                param_1[0x17] = uVar6 - local_8;
+              }
+            }
+          }
+        }
+        else {
+          (**(code **)(*param_1 + 0x5c))(2);
+        }
+        local_c = local_c + (-0x10 - *(int *)(iVar4 + 0xc));
+        *piVar1 = (int)local_14 +
+                  param_1[0x39] + (-local_c - (uint)*(ushort *)((int)param_1 + 0xea));
+      }
+      *piVar1 = (int)local_14;
+    }
+    else {
+      FUN_73aa5f49(s_******ConInfo::Read_-_Checksum_f_73aa765c);
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar8 = 0xfffffffe < _DAT_73aa78e0;
+      _DAT_73aa78e0 = _DAT_73aa78e0 + 1;
+      _DAT_73aa78e4 = _DAT_73aa78e4 + (uint)bVar8;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if ((param_1[9] != -1) && (*(char *)((int)param_1 + 0x69) == '\0')) {
+        *(undefined *)((int)param_1 + 0x69) = 1;
+        EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        bVar8 = 0xfffffffe < _DAT_73aa78e8;
+        _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+        _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar8;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        if (DAT_73aa7884 != 0) {
+          local_10 = (LPCSTR)(**(code **)(*param_1 + 0x20))();
+          if (local_10 == (LPCSTR)0x0) {
+            lpString2 = (LPCWSTR)0x0;
+          }
+          else {
+            iVar4 = lstrlenA(local_10);
+            FUN_73aa6210(unaff_DI);
+            local_14 = (LPCWSTR)&stack0xfffffdcc;
+            MultiByteToWideChar(0,0,local_10,-1,(LPWSTR)&stack0xfffffdcc,iVar4 + 1);
+            lpString2 = local_14;
+          }
+          lstrcpyW(local_128,lpString2);
+          wsprintfW(local_228,u_was_closed_because_an_invalid_ch_73aa75f0,local_8,param_1[0x3c]) ;
+          local_20 = local_128;
+          local_1c = local_228;
+          FUN_73aa6325(0x61110013,2,&local_20,0,(LPVOID)0x0);
+        }
+      }
+      FUN_73aa3af2(param_1);
+      local_10 = (LPCSTR)0x1;
+    }
+  }
+  if (param_1[0x44] != 0) {
+    FUN_73aa5e11(DAT_73aa7894,param_1[0x44],param_1[0x46]);
+    param_1[0x44] = 0;
+  }
+  param_1[0x45] = 0;
+  param_1[0x46] = 0;
+  param_1[0x47] = 0;
+  if (local_10 == (LPCSTR)0x0) {
+    uVar7 = FUN_73aa4740(param_1,2);
+  }
+  else {
+    uVar7 = 0;
+  }
+  return uVar7;
+}
+
+
+#Po ovom kodu bi smatrao da govoreci sa stringa zatvara se veza zbog ne vazeceg checksuma
+#U ovom slucaju je problem ukoliko checksum nije isti kao onaj koji je ocekivan.
+#ConInfo::Read - Checksum failure %d!=%d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa4ce2(int *param_1)
+
+{
+  int *piVar1;
+  uint uVar2;
+  undefined uVar3;
+  int iVar4;
+  LPCWSTR lpString2;
+  undefined4 *puVar5;
+  uint uVar6;
+  undefined4 uVar7;
+  undefined unaff_DI;
+  bool bVar8;
+  WCHAR local_228 [128];
+  WCHAR local_128 [128];
+  int local_28;
+  int local_24;
+  WCHAR *local_20;
+  WCHAR *local_1c;
+  int local_18;
+  LPCWSTR local_14;
+  LPCSTR local_10;
+  uint local_c;
+  undefined4 local_8;
+  
+  local_10 = (LPCSTR)0x0;
+  piVar1 = param_1 + 0x44;
+  local_c = (param_1[0x39] - (uint)*(ushort *)((int)param_1 + 0xea)) - 4;
+  if (*(int *)(*piVar1 + local_c) == 1) {
+    if (param_1[0x15] != 0) {
+      FUN_73aa58f8((uint *)*piVar1,local_c,param_1[0x15]);
+    }
+    local_8 = FUN_73aa5887(1,piVar1,(int)&local_c);
+    if (local_8 == param_1[0x3c]) {
+      local_14 = (LPCWSTR)*piVar1;
+      while ((0xf < local_c && (iVar4 = *piVar1, *(int *)(iVar4 + 0xc) + 0x10U <= local_c))) {
+        puVar5 = FUN_73aa3c81(param_1,&local_18,&local_1c,&local_28,&local_24);
+        if (local_28 == 0x7a737973) {
+          if (local_24 == 0) {
+            if (local_18 == -0x7fffffff) {
+              *(undefined *)(param_1 + 0x1a) = 1;
+            }
+            else if ((local_18 == -0x7ffffffe) && (local_1c == (WCHAR *)0x4)) {
+              uVar7 = *puVar5;
+              local_8._3_1_ = (undefined)((uint)uVar7 >> 0x18);
+              local_8._2_1_ = (undefined)((uint)uVar7 >> 0x10);
+              local_8._1_1_ = (undefined)((uint)uVar7 >> 8);
+              uVar3 = local_8._1_1_;
+              local_8._0_2_ = CONCAT11(local_8._2_1_,local_8._3_1_);
+              uVar2 = param_1[0x18];
+              local_8 = CONCAT13((char)uVar7,CONCAT12(uVar3,(undefined2)local_8));
+              uVar6 = param_1[0x19];
+              if (uVar6 < uVar2) {
+                uVar6 = (uVar6 - uVar2) - 1;
+              }
+              else {
+                uVar6 = uVar6 - uVar2;
+              }
+              if (local_8 <= uVar6) {
+                param_1[0x17] = uVar6 - local_8;
+              }
+            }
+          }
+        }
+        else {
+          (**(code **)(*param_1 + 0x5c))(2);
+        }
+        local_c = local_c + (-0x10 - *(int *)(iVar4 + 0xc));
+        *piVar1 = (int)local_14 +
+                  param_1[0x39] + (-local_c - (uint)*(ushort *)((int)param_1 + 0xea));
+      }
+      *piVar1 = (int)local_14;
+    }
+    else {
+      FUN_73aa5f49(s_******ConInfo::Read_-_Checksum_f_73aa765c);
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar8 = 0xfffffffe < _DAT_73aa78e0;
+      _DAT_73aa78e0 = _DAT_73aa78e0 + 1;
+      _DAT_73aa78e4 = _DAT_73aa78e4 + (uint)bVar8;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      if ((param_1[9] != -1) && (*(char *)((int)param_1 + 0x69) == '\0')) {
+        *(undefined *)((int)param_1 + 0x69) = 1;
+        EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        bVar8 = 0xfffffffe < _DAT_73aa78e8;
+        _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+        _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar8;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        if (DAT_73aa7884 != 0) {
+          local_10 = (LPCSTR)(**(code **)(*param_1 + 0x20))();
+          if (local_10 == (LPCSTR)0x0) {
+            lpString2 = (LPCWSTR)0x0;
+          }
+          else {
+            iVar4 = lstrlenA(local_10);
+            FUN_73aa6210(unaff_DI);
+            local_14 = (LPCWSTR)&stack0xfffffdcc;
+            MultiByteToWideChar(0,0,local_10,-1,(LPWSTR)&stack0xfffffdcc,iVar4 + 1);
+            lpString2 = local_14;
+          }
+          lstrcpyW(local_128,lpString2);
+          wsprintfW(local_228,u_was_closed_because_an_invalid_ch_73aa75f0,local_8,param_1[0x3c]) ;
+          local_20 = local_128;
+          local_1c = local_228;
+          FUN_73aa6325(0x61110013,2,&local_20,0,(LPVOID)0x0);
+        }
+      }
+      FUN_73aa3af2(param_1);
+      local_10 = (LPCSTR)0x1;
+    }
+  }
+  if (param_1[0x44] != 0) {
+    FUN_73aa5e11(DAT_73aa7894,param_1[0x44],param_1[0x46]);
+    param_1[0x44] = 0;
+  }
+  param_1[0x45] = 0;
+  param_1[0x46] = 0;
+  param_1[0x47] = 0;
+  if (local_10 == (LPCSTR)0x0) {
+    uVar7 = FUN_73aa4740(param_1,2);
+  }
+  else {
+    uVar7 = 0;
+  }
+  return uVar7;
+}
+
+
+#isti kod kao i prethodno.
+#Ovde je samo u delu ConInfo u delu Read gde se dovodi do neuspeha checksuma.
+#U principu kao sto sam naveo, ocekivan checksum nije isti.
+#ConInfoReadHandleFirstMessageSC - Invalid Signature
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+undefined4 __fastcall FUN_73aa4f84(int *param_1)
+
+{
+  uint uVar1;
+  DWORD DVar2;
+  int iVar3;
+  bool bVar4;
+  
+  FUN_73aa58f8((uint *)(param_1 + 0x38),0x28,0xf8273645);
+  if ((((param_1[0x38] == 0x4c694e6b) && (*(short *)(param_1 + 0x3a) == 2)) &&
+      ((uint)*(ushort *)((int)param_1 + 0xea) == param_1[0x39])) && (param_1[0x39] == 0x28)) {
+    if (param_1[0x17] == -1) {
+      uVar1 = param_1[0x18];
+      DVar2 = GetTickCount();
+      if (DVar2 < uVar1) {
+        iVar3 = (DVar2 - uVar1) + -1;
+      }
+      else {
+        iVar3 = DVar2 - uVar1;
+      }
+      param_1[0x17] = iVar3;
+    }
+    param_1[0xc] = param_1[0xc] | 2;
+    param_1[0x15] = param_1[0x3c];
+    param_1[0x1c] = param_1[0x3b];
+    param_1[0x31] = param_1[0x3b];
+    param_1[0x49] = param_1[0x3b];
+    param_1[0x16] = param_1[0x3d];
+    param_1[0x45] = 0;
+    param_1[0x46] = 0;
+    param_1[0x47] = 0;
+    iVar3 = FUN_73aa5085(param_1,1);
+    if ((iVar3 != 0) && (iVar3 = FUN_73aa4740(param_1,2), iVar3 != 0)) {
+      (**(code **)(*param_1 + 0x5c))(1);
+      return 1;
+    }
+  }
+  else {
+    FUN_73aa5f49(s_******ConInfoReadHandleFirstMess_73aa7690);
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar4 = 0xfffffffe < _DAT_73aa78e0;
+    _DAT_73aa78e0 = _DAT_73aa78e0 + 1;
+    _DAT_73aa78e4 = _DAT_73aa78e4 + (uint)bVar4;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+  }
+  FUN_73aa3af2(param_1);
+  return 0;
+}
+
+
+#Cini se da je ovo ConInfo kod zvani ConInfoHandleFirstMessageSC koji mozda navodi kako i sta da radi sa prvom porukom od klijenta.
+#String pokazuje deo koda koji daje gresku da je dostignut nevazeci potpit. Da, u bukvaljnom smislu.
+#was closed because a write completed with error %d
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __thiscall FUN_73aa50d5(void *this,uint param_1,int param_2)
+
+{
+  DWORD DVar1;
+  uint uVar2;
+  LPCSTR lpString;
+  int iVar3;
+  uint uVar4;
+  LPCWSTR lpString2;
+  undefined unaff_DI;
+  bool bVar5;
+  WCHAR local_20c [128];
+  WCHAR local_10c [128];
+  WCHAR *local_c;
+  WCHAR *local_8;
+  
+  if ((*(byte *)((int)this + 0x30) & 0x20) != 0) {
+    EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    bVar5 = 0xfffffffe < _DAT_73aa7908;
+    _DAT_73aa7908 = _DAT_73aa7908 + 1;
+    _DAT_73aa790c = _DAT_73aa790c + (uint)bVar5;
+    LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+    EnterCriticalSection((LPCRITICAL_SECTION)((int)this + 8));
+    if (((param_1 == 0) || (param_2 != 0)) || (*(int *)((int)this + 0x24) == -1)) {
+      if (*(int *)((int)this + 0x140) != 0) {
+        uVar2 = *(uint *)((int)this + 0x144);
+        if ((int)uVar2 < 0x80) {
+          uVar2 = 0x7f;
+        }
+        FUN_73aa5e11(DAT_73aa7894,*(int *)((int)this + 0x140),uVar2);
+        *(undefined4 *)((int)this + 0x140) = 0;
+        *(undefined4 *)((int)this + 0x144) = 0;
+      }
+      if (*(int *)((int)this + 0x14c) != 0) {
+        iVar3 = *(int *)((int)this + 0x150);
+        uVar4 = *(uint *)((int)this + 0x58) & 1;
+        uVar2 = iVar3 + 7;
+        if (uVar4 == 0) {
+          uVar2 = iVar3 + 3;
+        }
+        if ((uVar2 & 0xfffffffc) < 0x80) {
+          uVar2 = 0x7f;
+        }
+        else {
+          if (uVar4 == 0) {
+            uVar2 = iVar3 + 3;
+          }
+          else {
+            uVar2 = iVar3 + 7;
+          }
+          uVar2 = uVar2 & 0xfffffffc;
+        }
+        FUN_73aa5e11(DAT_73aa7894,*(int *)((int)this + 0x14c),uVar2);
+        *(undefined4 *)((int)this + 0x14c) = 0;
+        *(undefined4 *)((int)this + 0x150) = 0;
+      }
+      if (((*(int *)((int)this + 0x24) != -1) && (*(char *)((int)this + 0x69) == '\0')) &&
+         ((param_2 != 0 && (param_2 != 0x40)))) {
+        *(undefined *)((int)this + 0x69) = 1;
+        EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        bVar5 = 0xfffffffe < _DAT_73aa78e8;
+        _DAT_73aa78e8 = _DAT_73aa78e8 + 1;
+        _DAT_73aa78ec = _DAT_73aa78ec + (uint)bVar5;
+        LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+        if (DAT_73aa7884 != 0) {
+                    /* WARNING: Load size is inaccurate */
+          lpString = (LPCSTR)(**(code **)(*this + 0x20))();
+          lpString2 = (LPCWSTR)0x0;
+          if (lpString != (LPCSTR)0x0) {
+            iVar3 = lstrlenA(lpString);
+            FUN_73aa6210(unaff_DI);
+            MultiByteToWideChar(0,0,lpString,-1,(LPWSTR)&stack0xfffffde8,iVar3 + 1);
+            lpString2 = (LPCWSTR)&stack0xfffffde8;
+          }
+          lstrcpyW(local_10c,lpString2);
+          wsprintfW(local_20c,u_was_closed_because_a_write_compl_73aa76d4,param_2);
+          local_c = local_10c;
+          local_8 = local_20c;
+          FUN_73aa6325(0x61110013,2,&local_c,0,(LPVOID)0x0);
+        }
+      }
+      FUN_73aa3af2((int *)this);
+    }
+    else {
+      EnterCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      bVar5 = CARRY4(_DAT_73aa78b8,param_1);
+      _DAT_73aa78b8 = _DAT_73aa78b8 + param_1;
+      _DAT_73aa78bc = _DAT_73aa78bc + ((int)param_1 >> 0x1f) + (uint)bVar5;
+      LeaveCriticalSection((LPCRITICAL_SECTION)&DAT_73aa78a0);
+      *(undefined4 *)((int)this + 0x154) = 0;
+      DVar1 = GetTickCount();
+      *(int *)((int)this + 0x148) = *(int *)((int)this + 0x148) + param_1;
+      iVar3 = *(int *)((int)this + 0x148);
+      *(DWORD *)((int)this + 0x158) = DVar1;
+      uVar2 = *(uint *)((int)this + 0x144);
+      if (iVar3 < (int)uVar2) {
+        FUN_73aa3f41(this,0x1000000,(LPCVOID)(*(int *)((int)this + 0x140) + iVar3),uVar2 - iVar3) ;
+      }
+      else {
+        if ((int)uVar2 < 0x80) {
+          uVar2 = 0x7f;
+        }
+        FUN_73aa5e11(DAT_73aa7894,*(int *)((int)this + 0x140),uVar2);
+        *(int *)((int)this + 0x140) = 0;
+        *(undefined4 *)((int)this + 0x148) = 0;
+        *(undefined4 *)((int)this + 0x144) = 0;
+        FUN_73aa5357(this);
+      }
+    }
+    LeaveCriticalSection((LPCRITICAL_SECTION)((int)this + 8));
+    FUN_73aa26ff((undefined4 *)this);
+  }
+  return;
+}
+
+#ovaj kod, ako ne i zavrsni u sekciji "Defined Strings" za koje sam sve do sad navodio i drzao sumnju da su glavni za handshake sistematiku.
+#ovde se vidi da kod zavrsava i valjda je gotov sa handshakeom kada dode i zavrsi protokol pisanja(write)
+#po stringu je izjasnjeno da kod sadrzi deo za gresku u kojoj se valjda socket zatvara ako je pisanje zavrseno sa greskom.
