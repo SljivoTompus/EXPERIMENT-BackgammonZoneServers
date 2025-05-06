@@ -1,0 +1,72 @@
+No.     Time           Source                Destination           Protocol Length Info
+      1 0.000000       10.0.2.15             192.168.0.102         TCP      62     1036 → 28805 [SYN] Seq=0 Win=64240 Len=0 MSS=1460 SACK_PERM
+
+Frame 1: 62 bytes on wire (496 bits), 62 bytes captured (496 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c), Dst: 52:54:00:12:35:02 (52:54:00:12:35:02)
+Internet Protocol Version 4, Src: 10.0.2.15, Dst: 192.168.0.102
+Transmission Control Protocol, Src Port: 1036, Dst Port: 28805, Seq: 0, Len: 0
+
+No.     Time           Source                Destination           Protocol Length Info
+      2 0.000899       192.168.0.102         10.0.2.15             TCP      60     28805 → 1036 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0 MSS=1460
+
+Frame 2: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: 52:54:00:12:35:02 (52:54:00:12:35:02), Dst: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c)
+Internet Protocol Version 4, Src: 192.168.0.102, Dst: 10.0.2.15
+Transmission Control Protocol, Src Port: 28805, Dst Port: 1036, Seq: 0, Ack: 1, Len: 0
+
+No.     Time           Source                Destination           Protocol Length Info
+      3 0.000919       10.0.2.15             192.168.0.102         TCP      54     1036 → 28805 [ACK] Seq=1 Ack=1 Win=64240 Len=0
+
+Frame 3: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c), Dst: 52:54:00:12:35:02 (52:54:00:12:35:02)
+Internet Protocol Version 4, Src: 10.0.2.15, Dst: 192.168.0.102
+Transmission Control Protocol, Src Port: 1036, Dst Port: 28805, Seq: 1, Ack: 1, Len: 0
+
+No.     Time           Source                Destination           Protocol Length Info
+      4 0.001558       10.0.2.15             192.168.0.102         TCP      102    1036 → 28805 [PSH, ACK] Seq=1 Ack=1 Win=64240 Len=48
+
+Frame 4: 102 bytes on wire (816 bits), 102 bytes captured (816 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c), Dst: 52:54:00:12:35:02 (52:54:00:12:35:02)
+Internet Protocol Version 4, Src: 10.0.2.15, Dst: 192.168.0.102
+Transmission Control Protocol, Src Port: 1036, Dst Port: 28805, Seq: 1, Ack: 1, Len: 48
+Data (48 bytes)
+
+0000  93 69 5f 09 c8 27 36 45 f9 27 06 45 fb 27 36 45   .i_..'6E.'.E.'6E
+0010  bd 62 64 03 f8 27 36 45 f8 27 36 45 f8 27 36 45   .bd..'6E.'6E.'6E
+0020  23 23 6b 97 c4 e5 24 0c 68 23 7e 91 35 77 29 b3   ##k...$.h#~.5w).
+
+No.     Time           Source                Destination           Protocol Length Info
+      5 0.001902       192.168.0.102         10.0.2.15             TCP      60     28805 → 1036 [ACK] Seq=1 Ack=49 Win=65535 Len=0
+
+Frame 5: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: 52:54:00:12:35:02 (52:54:00:12:35:02), Dst: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c)
+Internet Protocol Version 4, Src: 192.168.0.102, Dst: 10.0.2.15
+Transmission Control Protocol, Src Port: 28805, Dst Port: 1036, Seq: 1, Ack: 49, Len: 0
+
+No.     Time           Source                Destination           Protocol Length Info
+      6 0.069881       192.168.0.102         10.0.2.15             TCP      74     28805 → 1036 [PSH, ACK] Seq=1 Ack=49 Win=65535 Len=20
+
+Frame 6: 74 bytes on wire (592 bits), 74 bytes captured (592 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: 52:54:00:12:35:02 (52:54:00:12:35:02), Dst: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c)
+Internet Protocol Version 4, Src: 192.168.0.102, Dst: 10.0.2.15
+Transmission Control Protocol, Src Port: 28805, Dst Port: 1036, Seq: 1, Ack: 49, Len: 20
+Data (20 bytes)
+
+0000  1f 59 69 9d 0d 57 49 9c 36 5e 46 93 20 65 52 9b   .Yi..WI.6^F. eR.
+0010  26 53 54 8b                                       &ST.
+
+No.     Time           Source                Destination           Protocol Length Info
+      7 0.177526       10.0.2.15             192.168.0.102         TCP      54     1036 → 28805 [ACK] Seq=49 Ack=21 Win=64220 Len=0
+
+Frame 7: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c), Dst: 52:54:00:12:35:02 (52:54:00:12:35:02)
+Internet Protocol Version 4, Src: 10.0.2.15, Dst: 192.168.0.102
+Transmission Control Protocol, Src Port: 1036, Dst Port: 28805, Seq: 49, Ack: 21, Len: 0
+
+No.     Time           Source                Destination           Protocol Length Info
+      8 18.948851      10.0.2.15             192.168.0.102         TCP      54     1036 → 28805 [RST, ACK] Seq=49 Ack=21 Win=0 Len=0
+
+Frame 8: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface \Device\NPF_{9F579014-28DE-4971-A41D-7335E8920880}, id 0
+Ethernet II, Src: PCSSystemtec_4e:f4:2c (08:00:27:4e:f4:2c), Dst: 52:54:00:12:35:02 (52:54:00:12:35:02)
+Internet Protocol Version 4, Src: 10.0.2.15, Dst: 192.168.0.102
+Transmission Control Protocol, Src Port: 1036, Dst Port: 28805, Seq: 49, Ack: 21, Len: 0
