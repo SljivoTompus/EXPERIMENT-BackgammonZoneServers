@@ -1,0 +1,40 @@
+opisi i statusi iz ZNetM.dll, deo nekog manjeg handshake sys.
+description and status from ZNetM.dll, part of some lower handshake sys.
+
+73aa6a4c	ZNetM.DLL	"ZNetM.DLL"	ds
+73aa6a56	DllCanUnloadNow	"DllCanUnloadNow"	ds
+73aa6a66	DllGetClassObject	"DllGetClassObject"	ds
+73aa7068	Delete	u"Delete"	unicode
+73aa7078	NoRemove	u"NoRemove"	unicode
+73aa708c	ForceRemove	u"ForceRemove"	unicode
+73aa7108	ZoneNetworkLoginMutex	u"ZoneNetworkLoginMutex"	unicode
+73aa7134	Error associating socket w/ completion port - %d
+	"Error associating socket w/ completion port - %d\n"	ds
+73aa7168	*** GetQueuedCompletionStatus failed %d.
+	"*** GetQueuedCompletionStatus failed %d.\n"	ds
+73aa7194	 was closed because of a coninfo timeout	u" was closed because of a coninfo timeout"	unicode
+73aa71e8	Zone	u"Zone"	unicode
+73aa71f4	#32770	u"#32770"	unicode
+73aa7204	Sign In	u"Sign In"	unicode
+73aa7214	ConInfo::~ConInfo - m_readMessageData was not NULL.  The data is the coninfo object.	u"ConInfo::~ConInfo - m_readMessageData was not NULL.  The data is the coninfo object."	unicode
+73aa72c0	CLSID\{32b9f4be-3472-11d1-927d-00c04fc2db04}	u"CLSID\\{32b9f4be-3472-11d1-927d-00c04fc2db04}"	unicode
+73aa7328	 was closed because ReadFile returned error %d	u" was closed because ReadFile returned error %d"	unicode
+73aa7388	 was closed because WriteFile returned error %d	u" was closed because WriteFile returned error %d"	unicode
+73aa73e8	ConInfo::Accept: ERROR - %d.
+	"ConInfo::Accept: ERROR - %d.\n"	ds
+73aa7408	AcceptEx error %d - no long accepting new connections
+	"AcceptEx error %d - no long accepting new connections\n"	ds
+73aa7440	Unabled to allocate socket for accept - no new connections will be accepted
+	"Unabled to allocate socket for accept - no new connections will be accepted\n"	ds
+73aa7490	******ConInfo::ReadSetState - Invalid state.******
+	"******ConInfo::ReadSetState - Invalid state.******\n"	ds
+73aa74c4	 was closed because a read completed with error %d	u" was closed because a read completed with error %d"	unicode
+73aa752c	 was closed because an invalid ZConnInternalGenericMsg.  The data is the header	u" was closed because an invalid ZConnInternalGenericMsg.  The data is the header"	unicode
+73aa75cc	******ConInfoRead - bad packet.
+	"******ConInfoRead - bad packet.\n"	ds
+73aa75f0	 was closed because an invalid checksum ( %d != %d ).	u" was closed because an invalid checksum ( %d != %d )."	unicode
+73aa765c	******ConInfo::Read - Checksum failure %d != %d.
+	"******ConInfo::Read - Checksum failure %d != %d.\n"	ds
+73aa7690	******ConInfoReadHandleFirstMessageSC - Invalid Signature ******
+	"******ConInfoReadHandleFirstMessageSC - Invalid Signature ******\n"	ds
+73aa76d4	 was closed because a write completed with error %d	u" was closed because a write completed with error %d"	unicode

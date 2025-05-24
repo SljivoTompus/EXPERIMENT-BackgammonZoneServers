@@ -1,0 +1,12 @@
+Manjak funkcija iz zeeverm.dll
+A bits of functions from zeeverm.dll
+
+72d0143c	zeeverm.dll	"zeeverm.dll"	ds
+72d01448	GetVersionPack	"GetVersionPack"	ds
+72d01457	StartUpdate	"StartUpdate"	ds
+72d02004	Delete	u"Delete"	unicode
+72d02014	NoRemove	u"NoRemove"	unicode
+72d02028	ForceRemove	u"ForceRemove"	unicode
+72d02054	\StringFileInfo\%04x%04x\SpecialBuild	"\\StringFileInfo\\%04x%04x\\SpecialBuild"	ds
+72d0207c	\VarFileInfo\Translation	"\\VarFileInfo\\Translation"	ds
+72d02098	%d.%02d.%d.%d	"%d.%02d.%d.%d"	ds
